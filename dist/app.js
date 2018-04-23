@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Request = require("request");
 const fs_1 = require("fs");
+const ID3 = require("node-id3");
 const md5_1 = require("./md5");
 const aesjs = require("./aes");
 const blowfish_1 = require("./blowfish");
@@ -84,10 +85,19 @@ class DZCrypt {
         str = this.zeroPad([md5_1.hex_md5(str), str, ''].join(urlsep));
         return aesjs.util.convertBytesToString(this.urlCryptor.encrypt(str.split('').map(c => c.charCodeAt(0))), 'hex');
     }
-    static downloadTrack(track, fmt = FILE_TYPES.MP3_320) {
+    static async downloadTrack(track, fmt = FILE_TYPES.MP3_320) {
         const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt);
         const key = this.bfGenKey(track.SNG_ID);
-        return this.downloadAndDecryptTrack(url, key);
+        const encryptedData = await this.downloadEncryptedTrack(url);
+        const decryptedData = this.decryptTrack(encryptedData, key);
+        const filename = `${track.SNG_TITLE}.mp3`;
+        this.writeBytesToFile(decryptedData, filename);
+        ID3.update({
+            TIT2: track['SNG_TITLE'],
+            TPE1: track['ART_NAME'],
+            TALB: track['ALB_TITLE'],
+        }, filename, (_) => { });
+        return true;
     }
     static writeBytesToFile(data, filename) {
         const wstream = fs_1.createWriteStream(filename);
@@ -95,10 +105,8 @@ class DZCrypt {
         wstream.end();
     }
     static decryptTrack(data, key) {
-        console.log('Converting into array');
         data = Uint8Array.from(data);
         var L = data.length;
-        console.log("Data length", L);
         for (var i = 0; i < L; i += 6144)
             if (i + 2048 <= L) {
                 var D = data.slice(i, i + 2048);
@@ -106,19 +114,16 @@ class DZCrypt {
                 bf.decrypt(D, [0, 1, 2, 3, 4, 5, 6, 7]);
                 data.set(D, i);
             }
-        const file = 'test.mp3';
-        this.writeBytesToFile(data, file);
-        console.log(file);
+        return data;
     }
-    static downloadAndDecryptTrack(url, key) {
+    static downloadEncryptedTrack(url) {
         return new Promise(resolve => {
             request({
                 url: url,
                 method: 'get',
                 encoding: null
             }, (err, httpsResponse, body) => {
-                const done = this.decryptTrack(body, key);
-                resolve('ok');
+                resolve(body);
             });
         });
     }

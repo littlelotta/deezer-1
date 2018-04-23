@@ -1,10 +1,10 @@
-import * as https from 'https'
 import * as Request from 'request'
-import { IncomingMessage } from 'http'
 import { writeFileSync, createWriteStream } from 'fs'
+import { IncomingMessage } from 'http'
+import * as ID3 from 'node-id3'
+
 import { hex_md5 } from './md5'
 import * as aesjs from './aes'
-import { reject } from 'bluebird';
 import { Blowfish } from './blowfish';
 
 const request = Request.defaults({
@@ -91,7 +91,7 @@ class DZCrypt {
 		return b;
 	};
 
-	private static encryptURL(track, fmt: FILE_TYPES) {
+	private static encryptURL(track: any, fmt: FILE_TYPES) {
 		const urlsep = '\xa4'
 		var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
 		str = this.zeroPad([hex_md5(str), str, ''].join(urlsep));
@@ -100,11 +100,29 @@ class DZCrypt {
 		), 'hex')
 	}
 
-	public static downloadTrack(track: any, fmt = FILE_TYPES.MP3_320) {
+	public static async downloadTrack(track: any, fmt = FILE_TYPES.MP3_320) {
 		const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt)
 		const key = this.bfGenKey(track.SNG_ID)
 
-		return this.downloadAndDecryptTrack(url, key)
+		const encryptedData = await this.downloadEncryptedTrack(url)
+		const decryptedData = this.decryptTrack(encryptedData, key)
+
+		const filename = `${track.SNG_TITLE}.mp3`
+		this.writeBytesToFile(decryptedData, filename)
+
+		ID3.update({
+			TIT2: track['SNG_TITLE'],
+			TPE1: track['ART_NAME'],
+			TALB: track['ALB_TITLE'],
+			// image: {
+			// 	mime: 'jpeg',
+			// 	type: { id: 3, name: 'front cover' },
+			// 	description: undefined,
+			// 	imageBuffer: false
+			// }
+		}, filename, (_: any) => { })
+
+		return true
 	}
 
 	private static writeBytesToFile(data: Uint8Array, filename: string) {
@@ -114,10 +132,8 @@ class DZCrypt {
 	}
 
 	private static decryptTrack(data: any, key: number[]) {
-		console.log('Converting into array')
 		data = Uint8Array.from(data)
 		var L = data.length
-		console.log("Data length", L);
 		for (var i = 0; i < L; i += 6144)
 			if (i + 2048 <= L) {
 				var D = data.slice(i, i + 2048)
@@ -125,21 +141,17 @@ class DZCrypt {
 				bf.decrypt(D, [0, 1, 2, 3, 4, 5, 6, 7])
 				data.set(D, i)
 			}
-
-		const file = 'test.mp3'
-		this.writeBytesToFile(data, file)
-		console.log(file)
+		return data
 	}
 
-	private static downloadAndDecryptTrack(url: string, key: number[]) {
+	private static downloadEncryptedTrack(url: string): Promise<any> {
 		return new Promise<string>(resolve => {
 			request({
 				url: url,
 				method: 'get',
 				encoding: null
 			}, (err, httpsResponse, body) => {
-				const done = this.decryptTrack(body, key)
-				resolve('ok')
+				resolve(body)
 			})
 		})
 	}
@@ -169,6 +181,7 @@ async function entry() {
 		const api = new DZApi(auth)
 
 		const info = await api.getTrackJSON(367505291)
+		// console.log(info)
 		const ret = await DZCrypt.downloadTrack(info)
 		console.log(ret);
 
