@@ -83,7 +83,16 @@ class DZCrypt {
         const urlsep = '\xa4';
         var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
         str = this.zeroPad([md5_1.hex_md5(str), str, ''].join(urlsep));
-        return aesjs.util.convertBytesToString(this.urlCryptor.encrypt(str.split('').map(c => c.charCodeAt(0))), 'hex');
+        const encrypted = aesjs.util.convertBytesToString(this.urlCryptor.encrypt(str.split('').map(c => c.charCodeAt(0))), 'hex');
+        return encrypted;
+    }
+    static async writeTagsToFile(track, file) {
+        ID3.update({
+            TIT2: track['SNG_TITLE'],
+            TPE1: track['ART_NAME'],
+            TALB: track['ALB_TITLE'],
+            APIC: await DZApi.getTrackCover(track['ALB_PICTURE'])
+        }, file, (_) => { });
     }
     static async downloadTrack(track, fmt = FILE_TYPES.MP3_320) {
         const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt);
@@ -91,15 +100,11 @@ class DZCrypt {
         const encryptedData = await this.downloadEncryptedTrack(url);
         const decryptedData = this.decryptTrack(encryptedData, key);
         const filename = `${track.SNG_TITLE}.mp3`;
-        this.writeBytesToFile(decryptedData, filename);
-        ID3.update({
-            TIT2: track['SNG_TITLE'],
-            TPE1: track['ART_NAME'],
-            TALB: track['ALB_TITLE'],
-        }, filename, (_) => { });
+        this.writeDataToFile(decryptedData, filename);
+        await this.writeTagsToFile(track, filename);
         return true;
     }
-    static writeBytesToFile(data, filename) {
+    static writeDataToFile(data, filename) {
         const wstream = fs_1.createWriteStream(filename);
         wstream.write(data);
         wstream.end();
@@ -129,7 +134,7 @@ class DZCrypt {
     }
 }
 DZCrypt.bfGK = 'g4el58wc0zvf9na1';
-DZCrypt.urlCryptor = new aesjs.ModeOfOperation.ecb(aesjs.util.convertStringToBytes('jo6aey6haid2Teih'));
+DZCrypt.urlCryptor = new aesjs.ModeOfOperationECB(aesjs.util.convertStringToBytes('jo6aey6haid2Teih'));
 class DZApi {
     constructor(auth) {
         this.auth = auth;
@@ -147,6 +152,17 @@ class DZApi {
             });
         });
     }
+    static getTrackCover(id, size = 1500) {
+        return new Promise((resolve, reject) => {
+            request({
+                url: `https://e-cdns-images.dzcdn.net/images/cover/${id}/${size}x${size}.jpg`,
+                method: 'get',
+                encoding: null,
+            }, (err, res, body) => {
+                resolve(Buffer.from(body));
+            });
+        });
+    }
 }
 async function entry() {
     try {
@@ -154,7 +170,6 @@ async function entry() {
         const api = new DZApi(auth);
         const info = await api.getTrackJSON(367505291);
         const ret = await DZCrypt.downloadTrack(info);
-        console.log(ret);
     }
     catch (err) {
         console.log(err);

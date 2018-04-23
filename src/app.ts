@@ -6,8 +6,6 @@ import * as ID3 from 'node-id3'
 import { hex_md5 } from './md5'
 import * as aesjs from './aes'
 import { Blowfish } from './blowfish';
-import { method } from 'bluebird';
-import { createHash } from 'crypto';
 
 const request = Request.defaults({
 	jar: Request.jar(),
@@ -66,7 +64,7 @@ class AuthObject {
 class DZCrypt {
 
 	private static bfGK = 'g4el58wc0zvf9na1'
-	private static urlCryptor = new aesjs.ModeOfOperation.ecb(aesjs.util.convertStringToBytes('jo6aey6haid2Teih'))
+	private static urlCryptor = new aesjs.ModeOfOperationECB(aesjs.util.convertStringToBytes('jo6aey6haid2Teih'))
 
 	private static bfGenKey2(h1: string, h2: string): number[] {
 		var l = h1.length,
@@ -97,9 +95,10 @@ class DZCrypt {
 		const urlsep = '\xa4'
 		var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
 		str = this.zeroPad([hex_md5(str), str, ''].join(urlsep));
-		return aesjs.util.convertBytesToString(this.urlCryptor.encrypt(
+		const encrypted = aesjs.util.convertBytesToString(this.urlCryptor.encrypt(
 			str.split('').map(c => c.charCodeAt(0))
 		), 'hex')
+		return encrypted
 	}
 
 	private static async writeTagsToFile(track: any, file: string) {
@@ -115,8 +114,6 @@ class DZCrypt {
 		const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt)
 		const key = this.bfGenKey(track.SNG_ID)
 
-		console.log(url, url === 'https://e-cdns-proxy-4.dzcdn.net/mobile/1/d743065c1cbc3d8c782c2007f7d9ca6f143f81f68822791ad5bee39f35df09bc49a5cbe40f97432ac95bddf40800c2999be9cae111fea83e151832328767b1617fde38a2016729dda1be220de4378300')
-		return
 		const encryptedData = await this.downloadEncryptedTrack(url)
 		const decryptedData = this.decryptTrack(encryptedData, key)
 
