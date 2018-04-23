@@ -4,10 +4,10 @@ const createBuffer = function (arg) { return new Buffer(arg); };
 const copyBuffer = function (sourceBuffer, targetBuffer, targetStart, sourceStart, sourceEnd) {
     sourceBuffer.copy(targetBuffer, targetStart, sourceStart, sourceEnd);
 };
-const convertStringToBytes = function (text, encoding) {
+const convertStringToBytes = function (text, encoding = 'utf8') {
     return new Buffer(text, encoding);
 };
-const convertBytesToString = function (bytes, encoding) {
+const convertBytesToString = function (bytes, encoding = 'utf8') {
     return (new Buffer(bytes)).toString(encoding);
 };
 const numberOfRounds = { 16: 10, 24: 12, 32: 14 };
@@ -172,9 +172,9 @@ class AES {
         return result;
     }
 }
-class ModeOfOperationECB {
+class ECB {
     constructor(key) {
-        if (!(this instanceof ModeOfOperationECB)) {
+        if (!(this instanceof ECB)) {
             throw Error('AES must be instanitated with `new`');
         }
         this.description = "Electronic Code Block";
@@ -208,7 +208,7 @@ class ModeOfOperationECB {
         return plaintext;
     }
 }
-exports.ModeOfOperationECB = ModeOfOperationECB;
+exports.ECB = ECB;
 exports.util = {
     convertBytesToString: convertBytesToString,
     convertStringToBytes: convertStringToBytes,

@@ -4,8 +4,8 @@ import { IncomingMessage } from 'http'
 import * as ID3 from 'node-id3'
 
 import { hex_md5 } from './md5'
-import * as aesjs from './aes'
-import { Blowfish } from './blowfish';
+import { Blowfish } from './blowfish'
+import { ECB, util } from './aes'
 
 const request = Request.defaults({
 	jar: Request.jar(),
@@ -64,7 +64,7 @@ class AuthObject {
 class DZCrypt {
 
 	private static bfGK = 'g4el58wc0zvf9na1'
-	private static urlCryptor = new aesjs.ModeOfOperationECB(aesjs.util.convertStringToBytes('jo6aey6haid2Teih'))
+	private static urlCryptor = new ECB(util.convertStringToBytes('jo6aey6haid2Teih'))
 
 	private static bfGenKey2(h1: string, h2: string): number[] {
 		var l = h1.length,
@@ -81,12 +81,11 @@ class DZCrypt {
 		return k
 	}
 
-	private static zeroPad(b) {
+	private static zeroPad(b: string) {
 		const aesBS = 16;
 		var l = b.length;
 		if (l % aesBS != 0) {
-			if (typeof (b) === 'string') b += '\0'.repeat(aesBS - (l % aesBS));
-			else b = b.concat(Array.apply(null, Array(aesBS - (l % aesBS))).map(() => 0));
+			b += '\0'.repeat(aesBS - (l % aesBS));
 		}
 		return b;
 	};
@@ -95,7 +94,7 @@ class DZCrypt {
 		const urlsep = '\xa4'
 		var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
 		str = this.zeroPad([hex_md5(str), str, ''].join(urlsep));
-		const encrypted = aesjs.util.convertBytesToString(this.urlCryptor.encrypt(
+		const encrypted = util.convertBytesToString(this.urlCryptor.encrypt(
 			str.split('').map(c => c.charCodeAt(0))
 		), 'hex')
 		return encrypted
@@ -136,8 +135,8 @@ class DZCrypt {
 		for (var i = 0; i < L; i += 6144)
 			if (i + 2048 <= L) {
 				var D = data.slice(i, i + 2048)
-				var bf = new Blowfish(key, 'cbc')
-				bf.decrypt(D, [0, 1, 2, 3, 4, 5, 6, 7])
+				var bf = new Blowfish(key)
+				bf.decryptCBC(D, [0, 1, 2, 3, 4, 5, 6, 7])
 				data.set(D, i)
 			}
 		return data

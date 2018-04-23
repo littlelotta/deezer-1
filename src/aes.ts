@@ -4,11 +4,11 @@ const copyBuffer = function (sourceBuffer: Buffer, targetBuffer: Buffer, targetS
 	sourceBuffer.copy(targetBuffer, targetStart, sourceStart, sourceEnd);
 }
 
-const convertStringToBytes = function (text: string, encoding: string): Buffer {
+const convertStringToBytes = function (text: string, encoding = 'utf8'): Buffer {
 	return new Buffer(text, encoding);
 }
 
-const convertBytesToString = function (bytes: any, encoding: string): string {
+const convertBytesToString = function (bytes: any, encoding = 'utf8'): string {
 	return (new Buffer(bytes)).toString(encoding);
 }
 
@@ -59,7 +59,7 @@ class AES {
 	_Ke: number[][]
 	_Kd: number[][]
 
-	constructor(key: number[]) {
+	constructor(key: Buffer) {
 		if (!(this instanceof AES)) {
 			throw Error('AES must be instanitated with `new`');
 		}
@@ -242,14 +242,14 @@ class AES {
  */
 
 
-export class ModeOfOperationECB {
+export class ECB {
 
 	private description: string
 	private name: string
 	private _aes: AES
 
-	constructor(key: number[]) {
-		if (!(this instanceof ModeOfOperationECB)) {
+	constructor(key: Buffer) {
+		if (!(this instanceof ECB)) {
 			throw Error('AES must be instanitated with `new`');
 		}
 

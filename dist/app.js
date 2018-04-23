@@ -4,8 +4,8 @@ const Request = require("request");
 const fs_1 = require("fs");
 const ID3 = require("node-id3");
 const md5_1 = require("./md5");
-const aesjs = require("./aes");
 const blowfish_1 = require("./blowfish");
+const aes_1 = require("./aes");
 const request = Request.defaults({
     jar: Request.jar(),
     headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36' }
@@ -71,10 +71,7 @@ class DZCrypt {
         const aesBS = 16;
         var l = b.length;
         if (l % aesBS != 0) {
-            if (typeof (b) === 'string')
-                b += '\0'.repeat(aesBS - (l % aesBS));
-            else
-                b = b.concat(Array.apply(null, Array(aesBS - (l % aesBS))).map(() => 0));
+            b += '\0'.repeat(aesBS - (l % aesBS));
         }
         return b;
     }
@@ -83,7 +80,7 @@ class DZCrypt {
         const urlsep = '\xa4';
         var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
         str = this.zeroPad([md5_1.hex_md5(str), str, ''].join(urlsep));
-        const encrypted = aesjs.util.convertBytesToString(this.urlCryptor.encrypt(str.split('').map(c => c.charCodeAt(0))), 'hex');
+        const encrypted = aes_1.util.convertBytesToString(this.urlCryptor.encrypt(str.split('').map(c => c.charCodeAt(0))), 'hex');
         return encrypted;
     }
     static async writeTagsToFile(track, file) {
@@ -115,8 +112,8 @@ class DZCrypt {
         for (var i = 0; i < L; i += 6144)
             if (i + 2048 <= L) {
                 var D = data.slice(i, i + 2048);
-                var bf = new blowfish_1.Blowfish(key, 'cbc');
-                bf.decrypt(D, [0, 1, 2, 3, 4, 5, 6, 7]);
+                var bf = new blowfish_1.Blowfish(key);
+                bf.decryptCBC(D, [0, 1, 2, 3, 4, 5, 6, 7]);
                 data.set(D, i);
             }
         return data;
@@ -134,7 +131,7 @@ class DZCrypt {
     }
 }
 DZCrypt.bfGK = 'g4el58wc0zvf9na1';
-DZCrypt.urlCryptor = new aesjs.ModeOfOperationECB(aesjs.util.convertStringToBytes('jo6aey6haid2Teih'));
+DZCrypt.urlCryptor = new aes_1.ECB(aes_1.util.convertStringToBytes('jo6aey6haid2Teih'));
 class DZApi {
     constructor(auth) {
         this.auth = auth;
