@@ -6,6 +6,8 @@ import * as ID3 from 'node-id3'
 import { hex_md5 } from './md5'
 import * as aesjs from './aes'
 import { Blowfish } from './blowfish';
+import { method } from 'bluebird';
+import { createHash } from 'crypto';
 
 const request = Request.defaults({
 	jar: Request.jar(),
@@ -100,32 +102,32 @@ class DZCrypt {
 		), 'hex')
 	}
 
-	public static async downloadTrack(track: any, fmt = FILE_TYPES.MP3_320) {
-		const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt)
-		const key = this.bfGenKey(track.SNG_ID)
-
-		const encryptedData = await this.downloadEncryptedTrack(url)
-		const decryptedData = this.decryptTrack(encryptedData, key)
-
-		const filename = `${track.SNG_TITLE}.mp3`
-		this.writeBytesToFile(decryptedData, filename)
-
+	private static async writeTagsToFile(track: any, file: string) {
 		ID3.update({
 			TIT2: track['SNG_TITLE'],
 			TPE1: track['ART_NAME'],
 			TALB: track['ALB_TITLE'],
-			// image: {
-			// 	mime: 'jpeg',
-			// 	type: { id: 3, name: 'front cover' },
-			// 	description: undefined,
-			// 	imageBuffer: false
-			// }
-		}, filename, (_: any) => { })
+			APIC: await DZApi.getTrackCover(track['ALB_PICTURE'])
+		}, file, (_: any) => { })
+	}
+
+	public static async downloadTrack(track: any, fmt = FILE_TYPES.MP3_320) {
+		const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt)
+		const key = this.bfGenKey(track.SNG_ID)
+
+		console.log(url, url === 'https://e-cdns-proxy-4.dzcdn.net/mobile/1/d743065c1cbc3d8c782c2007f7d9ca6f143f81f68822791ad5bee39f35df09bc49a5cbe40f97432ac95bddf40800c2999be9cae111fea83e151832328767b1617fde38a2016729dda1be220de4378300')
+		return
+		const encryptedData = await this.downloadEncryptedTrack(url)
+		const decryptedData = this.decryptTrack(encryptedData, key)
+
+		const filename = `${track.SNG_TITLE}.mp3`
+		this.writeDataToFile(decryptedData, filename)
+		await this.writeTagsToFile(track, filename)
 
 		return true
 	}
 
-	private static writeBytesToFile(data: Uint8Array, filename: string) {
+	private static writeDataToFile(data: Uint8Array, filename: string) {
 		const wstream = createWriteStream(filename)
 		wstream.write(data)
 		wstream.end()
@@ -173,6 +175,18 @@ class DZApi {
 			})
 		})
 	}
+
+	static getTrackCover(id: string, size = 1500): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			request({
+				url: `https://e-cdns-images.dzcdn.net/images/cover/${id}/${size}x${size}.jpg`,
+				method: 'get',
+				encoding: null,
+			}, (err, res, body) => {
+				resolve(Buffer.from(body))
+			})
+		})
+	}
 }
 
 async function entry() {
@@ -181,9 +195,7 @@ async function entry() {
 		const api = new DZApi(auth)
 
 		const info = await api.getTrackJSON(367505291)
-		// console.log(info)
 		const ret = await DZCrypt.downloadTrack(info)
-		console.log(ret);
 
 	} catch (err) {
 		console.log(err)
