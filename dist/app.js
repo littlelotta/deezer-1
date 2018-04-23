@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Request = require("request");
+const fs_1 = require("fs");
 const md5_1 = require("./md5");
 const aesjs = require("./aes");
+const blowfish_1 = require("./blowfish");
 const request = Request.defaults({
     jar: Request.jar(),
     headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36' }
@@ -58,13 +60,11 @@ class DZCrypt {
             s.push(this.bfGK.charCodeAt(i) ^ h1.charCodeAt(i) ^ h2.charCodeAt(i));
         return s;
     }
-    static bfGenKey(id, format) {
+    static bfGenKey(id) {
         var h = md5_1.hex_md5(id + '');
         var h1 = h.substr(0, 16), h2 = h.substr(16, 16);
         var k = this.bfGenKey2(h1, h2);
-        if (!format)
-            return k;
-        return k.map(format == 'hex' ? ((a) => (a + 256).toString(16).substr(-2)) : ((a) => String.fromCharCode(a))).join('');
+        return k;
     }
     static zeroPad(b) {
         const aesBS = 16;
@@ -78,24 +78,49 @@ class DZCrypt {
         return b;
     }
     ;
-    static str2bin(s) {
-        return s.split('').map(c => c.charCodeAt(0));
-    }
-    static bin2hex(b) {
-        return aesjs.util.convertBytesToString(b, 'hex');
-    }
     static encryptURL(track, fmt) {
         const urlsep = '\xa4';
         var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
         str = this.zeroPad([md5_1.hex_md5(str), str, ''].join(urlsep));
-        return this.bin2hex(this.urlCryptor.encrypt(this.str2bin(str)));
+        return aesjs.util.convertBytesToString(this.urlCryptor.encrypt(str.split('').map(c => c.charCodeAt(0))), 'hex');
     }
-    static dzDownload(track, fmt = FILE_TYPES.MP3_320) {
-        var msg = [
-            'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt),
-            this.bfGenKey(track.SNG_ID, '')
-        ];
-        console.log(msg);
+    static downloadTrack(track, fmt = FILE_TYPES.MP3_320) {
+        const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt);
+        const key = this.bfGenKey(track.SNG_ID);
+        return this.downloadAndDecryptTrack(url, key);
+    }
+    static writeBytesToFile(data, filename) {
+        const wstream = fs_1.createWriteStream(filename);
+        wstream.write(data);
+        wstream.end();
+    }
+    static decryptTrack(data, key) {
+        console.log('Converting into array');
+        data = Uint8Array.from(data);
+        var L = data.length;
+        console.log("Data length", L);
+        for (var i = 0; i < L; i += 6144)
+            if (i + 2048 <= L) {
+                var D = data.slice(i, i + 2048);
+                var bf = new blowfish_1.Blowfish(key, 'cbc');
+                bf.decrypt(D, [0, 1, 2, 3, 4, 5, 6, 7]);
+                data.set(D, i);
+            }
+        const file = 'test.mp3';
+        this.writeBytesToFile(data, file);
+        console.log(file);
+    }
+    static downloadAndDecryptTrack(url, key) {
+        return new Promise(resolve => {
+            request({
+                url: url,
+                method: 'get',
+                encoding: null
+            }, (err, httpsResponse, body) => {
+                const done = this.decryptTrack(body, key);
+                resolve('ok');
+            });
+        });
     }
 }
 DZCrypt.bfGK = 'g4el58wc0zvf9na1';
@@ -123,7 +148,8 @@ async function entry() {
         const auth = await AuthObject.getNewAuth();
         const api = new DZApi(auth);
         const info = await api.getTrackJSON(367505291);
-        DZCrypt.dzDownload(info);
+        const ret = await DZCrypt.downloadTrack(info);
+        console.log(ret);
     }
     catch (err) {
         console.log(err);

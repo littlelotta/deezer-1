@@ -1,10 +1,11 @@
 import * as https from 'https'
 import * as Request from 'request'
 import { IncomingMessage } from 'http'
-import { writeFileSync } from 'fs'
+import { writeFileSync, createWriteStream } from 'fs'
 import { hex_md5 } from './md5'
 import * as aesjs from './aes'
 import { reject } from 'bluebird';
+import { Blowfish } from './blowfish';
 
 const request = Request.defaults({
 	jar: Request.jar(),
@@ -72,13 +73,12 @@ class DZCrypt {
 		return s
 	}
 
-	private static bfGenKey(id: string, format: string): number[] | string {
+	private static bfGenKey(id: string): number[] {
 		var h = hex_md5(id + '')
 		var h1 = h.substr(0, 16),
 			h2 = h.substr(16, 16)
 		var k = this.bfGenKey2(h1, h2)
-		if (!format) return k
-		return k.map(format == 'hex' ? ((a: number) => (a + 256).toString(16).substr(-2)) : ((a: number) => String.fromCharCode(a))).join('')
+		return k
 	}
 
 	private static zeroPad(b) {
@@ -91,28 +91,57 @@ class DZCrypt {
 		return b;
 	};
 
-	private static str2bin(s: string) {
-		return s.split('').map(c => c.charCodeAt(0));
-	}
-
-	private static bin2hex(b) {
-		return aesjs.util.convertBytesToString(b, 'hex');
-	}
-
 	private static encryptURL(track, fmt: FILE_TYPES) {
 		const urlsep = '\xa4'
 		var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
 		str = this.zeroPad([hex_md5(str), str, ''].join(urlsep));
-		return this.bin2hex(this.urlCryptor.encrypt(this.str2bin(str)));
+		return aesjs.util.convertBytesToString(this.urlCryptor.encrypt(
+			str.split('').map(c => c.charCodeAt(0))
+		), 'hex')
 	}
 
-	static dzDownload(track, fmt = FILE_TYPES.MP3_320) {
-		var msg = [
-			'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt),
-			this.bfGenKey(track.SNG_ID, '')
-		]
-		console.log(msg)
-		// mainWk.postMessage(msg)
+	public static downloadTrack(track: any, fmt = FILE_TYPES.MP3_320) {
+		const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt)
+		const key = this.bfGenKey(track.SNG_ID)
+
+		return this.downloadAndDecryptTrack(url, key)
+	}
+
+	private static writeBytesToFile(data: Uint8Array, filename: string) {
+		const wstream = createWriteStream(filename)
+		wstream.write(data)
+		wstream.end()
+	}
+
+	private static decryptTrack(data: any, key: number[]) {
+		console.log('Converting into array')
+		data = Uint8Array.from(data)
+		var L = data.length
+		console.log("Data length", L);
+		for (var i = 0; i < L; i += 6144)
+			if (i + 2048 <= L) {
+				var D = data.slice(i, i + 2048)
+				var bf = new Blowfish(key, 'cbc')
+				bf.decrypt(D, [0, 1, 2, 3, 4, 5, 6, 7])
+				data.set(D, i)
+			}
+
+		const file = 'test.mp3'
+		this.writeBytesToFile(data, file)
+		console.log(file)
+	}
+
+	private static downloadAndDecryptTrack(url: string, key: number[]) {
+		return new Promise<string>(resolve => {
+			request({
+				url: url,
+				method: 'get',
+				encoding: null
+			}, (err, httpsResponse, body) => {
+				const done = this.decryptTrack(body, key)
+				resolve('ok')
+			})
+		})
 	}
 }
 
@@ -140,7 +169,9 @@ async function entry() {
 		const api = new DZApi(auth)
 
 		const info = await api.getTrackJSON(367505291)
-		DZCrypt.dzDownload(info)
+		const ret = await DZCrypt.downloadTrack(info)
+		console.log(ret);
+
 	} catch (err) {
 		console.log(err)
 	}
