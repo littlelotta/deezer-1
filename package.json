@@ -1,0 +1,25 @@
+{
+  "name": "deezer",
+  "version": "1.0.0",
+  "description": "Deezer Downloader",
+  "main": "aes.js",
+  "dependencies": {
+    "@types/node": "^9.4.7",
+    "@types/request": "^2.47.0",
+    "request": "^2.85.0",
+    "@types/request-promise": "^4.1.41",
+    "request-promise": "^4.2.2"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CupCakeArmy/deezer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CupCakeArmy/deezer/issues"
+  },
+  "homepage": "https://github.com/CupCakeArmy/deezer#readme"
+}
