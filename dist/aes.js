@@ -25,7 +25,7 @@ var slowCreateBuffer = function (arg) {
         return result;
     }
 };
-if (typeof (Buffer) === 'undefined') {
+if (true) {
     createBuffer = slowCreateBuffer;
     copyBuffer = function (sourceBuffer, targetBuffer, targetStart, sourceStart, sourceEnd) {
         if (targetStart == null) {

@@ -82,23 +82,28 @@ class DZCrypt {
 	}
 
 	private static zeroPad(b) {
-		const aesBS = 16
-		const l = b.length
+		const aesBS = 16;
+		var l = b.length;
 		if (l % aesBS != 0) {
-			if (typeof (b) === 'string') b += '\0'.repeat(aesBS - (l % aesBS))
-			else b = b.concat(Array.apply(null, Array(aesBS - (l % aesBS))).map(() => 0))
+			if (typeof (b) === 'string') b += '\0'.repeat(aesBS - (l % aesBS));
+			else b = b.concat(Array.apply(null, Array(aesBS - (l % aesBS))).map(() => 0));
 		}
-		return b
+		return b;
+	};
+
+	private static str2bin(s: string) {
+		return s.split('').map(c => c.charCodeAt(0));
+	}
+
+	private static bin2hex(b) {
+		return aesjs.util.convertBytesToString(b, 'hex');
 	}
 
 	private static encryptURL(track, fmt: FILE_TYPES) {
 		const urlsep = '\xa4'
-		var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep)
-		str = DZCrypt.zeroPad([hex_md5(str), str, ''].join(urlsep))
-		return aesjs.util.convertBytesToString(
-			(DZCrypt.urlCryptor.encrypt(
-				aesjs.util.convertBytesToString(str, 'hex')
-			)), 'hex')
+		var str = [track.MD5_ORIGIN, fmt, track.SNG_ID, track.MEDIA_VERSION].join(urlsep);
+		str = this.zeroPad([hex_md5(str), str, ''].join(urlsep));
+		return this.bin2hex(this.urlCryptor.encrypt(this.str2bin(str)));
 	}
 
 	static dzDownload(track, fmt = FILE_TYPES.MP3_320) {

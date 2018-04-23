@@ -34,7 +34,8 @@ var slowCreateBuffer = function (arg) {
 	}
 }
 
-if (typeof (Buffer) === 'undefined') {
+// TODO: Implement native buffer
+if (true) {
 	createBuffer = slowCreateBuffer;
 
 	copyBuffer = function (sourceBuffer, targetBuffer, targetStart, sourceStart, sourceEnd) {
