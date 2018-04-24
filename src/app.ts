@@ -159,6 +159,35 @@ class DZApi {
 
 	constructor(public auth: AuthObject) { }
 
+	search(q: string): Promise<any[]> {
+		const query = {
+			'QUERY': q,
+			'TYPES': {
+				'ARTIST': false,
+				'ALBUM': false,
+				'TRACK': true,
+				'PLAYLIST': false,
+				'RADIO': false,
+				'SHOW': false,
+				'TAG': false,
+				'USER': false,
+				'CHANNEL': false,
+				'LIVESTREAM': false
+			},
+			// 'NB': 3
+		}
+		return new Promise((resolve, reject) => {
+			request({
+				url: `https://www.deezer.com/ajax/gw-light.php?method=deezer.suggest&input=3&api_version=1.0&api_token=${this.auth.token}`,
+				method: 'POST',
+				json: query
+			}, (err, res, body) => {
+				if (Object.keys(body.results).length === 0) reject('Bad request')
+				resolve(body.results.TRACK)
+			})
+		})
+	}
+
 	getTrackJSON(id: string | number): Promise<JSON> {
 		return new Promise((resolve, reject) => {
 			request({
@@ -190,8 +219,10 @@ async function entry() {
 		const auth = await AuthObject.getNewAuth()
 		const api = new DZApi(auth)
 
-		const info = await api.getTrackJSON(367505291)
-		const ret = await DZCrypt.downloadTrack(info)
+		// const info = await api.getTrackJSON(367505291)
+		// const ret = await DZCrypt.downloadTrack(info)
+		const ret = await api.search('Tim Schaufert')
+		console.log(ret.length)
 
 	} catch (err) {
 		console.log(err)

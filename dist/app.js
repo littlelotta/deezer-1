@@ -136,6 +136,34 @@ class DZApi {
     constructor(auth) {
         this.auth = auth;
     }
+    search(q) {
+        const query = {
+            'QUERY': q,
+            'TYPES': {
+                'ARTIST': false,
+                'ALBUM': false,
+                'TRACK': true,
+                'PLAYLIST': false,
+                'RADIO': false,
+                'SHOW': false,
+                'TAG': false,
+                'USER': false,
+                'CHANNEL': false,
+                'LIVESTREAM': false
+            },
+        };
+        return new Promise((resolve, reject) => {
+            request({
+                url: `https://www.deezer.com/ajax/gw-light.php?method=deezer.suggest&input=3&api_version=1.0&api_token=${this.auth.token}`,
+                method: 'POST',
+                json: query
+            }, (err, res, body) => {
+                if (Object.keys(body.results).length === 0)
+                    reject('Bad request');
+                resolve(body.results.TRACK);
+            });
+        });
+    }
     getTrackJSON(id) {
         return new Promise((resolve, reject) => {
             request({
@@ -165,8 +193,8 @@ async function entry() {
     try {
         const auth = await AuthObject.getNewAuth();
         const api = new DZApi(auth);
-        const info = await api.getTrackJSON(367505291);
-        const ret = await DZCrypt.downloadTrack(info);
+        const ret = await api.search('Tim Schaufert');
+        console.log(ret.length);
     }
     catch (err) {
         console.log(err);
