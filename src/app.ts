@@ -219,11 +219,9 @@ async function entry() {
 		const auth = await AuthObject.getNewAuth()
 		const api = new DZApi(auth)
 
-		// const info = await api.getTrackJSON(367505291)
-		// const ret = await DZCrypt.downloadTrack(info)
-		const ret = await api.search('Tim Schaufert')
-		console.log(ret.length)
-
+		const search = await api.search('Nobody A little')
+		const info = await api.getTrackJSON(search[0]['SNG_ID'])
+		const ret = await DZCrypt.downloadTrack(info)
 	} catch (err) {
 		console.log(err)
 	}
