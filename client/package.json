@@ -1,0 +1,32 @@
+{
+  "private": true,
+  "scripts": {
+    "build:dev": "webpack -d",
+    "build:prod": "webpack -p",
+    "dev": "webpack-dev-server -d"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "react-redux": "latest",
+    "redux": "latest"
+  },
+  "devDependencies": {
+    "babel-core": "latest",
+    "babel-loader": "latest",
+    "babel-plugin-transform-class-properties": "latest",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-latest": "latest",
+    "babel-preset-react": "latest",
+    "css-loader": "^0.28.11",
+    "file-loader": "latest",
+    "html-loader": "latest",
+    "html-webpack-plugin": "latest",
+    "less": "^3.0.2",
+    "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.4.0",
+    "webpack": "latest",
+    "webpack-cli": "latest",
+    "webpack-dev-server": "latest"
+  }
+}
