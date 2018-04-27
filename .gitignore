@@ -1,8 +1,0 @@
-.*
-
-*.mp3
-
-dist
-
-node_modules/
-package-lock.json
