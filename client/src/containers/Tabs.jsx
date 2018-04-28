@@ -9,7 +9,7 @@ export default class extends Component {
 		return (
 			<div>
 				<div id="spacer" className="is-hidden-mobile"></div>
-				<section className="hero is-info">
+				<section className="hero is-info" id="header">
 					<div className="hero-body">
 						<div className="container">
 							<h1 className="title">Deezer Ripper</h1>
