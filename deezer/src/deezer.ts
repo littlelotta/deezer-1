@@ -2,6 +2,7 @@ import * as Request from 'request'
 import { writeFileSync, createWriteStream } from 'fs'
 import { IncomingMessage } from 'http'
 import * as ID3 from 'node-id3'
+import * as df from 'downloads-folder'
 
 import { hex_md5 } from './md5'
 import { Blowfish } from './blowfish'
@@ -116,7 +117,7 @@ class DZCrypt {
 		const encryptedData = await this.downloadEncryptedTrack(url)
 		const decryptedData = this.decryptTrack(encryptedData, key)
 
-		const filename = `${track.SNG_TITLE}.mp3`
+		const filename = `${df()}/${track.SNG_TITLE}.mp3`
 		this.writeDataToFile(decryptedData, filename)
 		await this.writeTagsToFile(track, filename)
 
@@ -155,17 +156,21 @@ class DZCrypt {
 	}
 }
 
-class DZApi {
+export default class DZApi {
+
+	public static async newAsync(): Promise<DZApi> {
+		return new this(await AuthObject.getNewAuth())
+	}
 
 	constructor(public auth: AuthObject) { }
 
-	search(q: string): Promise<any[]> {
+	public search(q: string): Promise<any[]> {
 		const query = {
 			'QUERY': q,
 			'TYPES': {
 				'ARTIST': false,
-				'ALBUM': false,
-				'TRACK': true,
+				'ALBUM': true,
+				'TRACK': false,
 				'PLAYLIST': false,
 				'RADIO': false,
 				'SHOW': false,
@@ -174,7 +179,7 @@ class DZApi {
 				'CHANNEL': false,
 				'LIVESTREAM': false
 			},
-			// 'NB': 3
+			'NB': 25
 		}
 		return new Promise((resolve, reject) => {
 			request({
@@ -186,6 +191,10 @@ class DZApi {
 				resolve(body.results.TRACK)
 			})
 		})
+	}
+
+	public dlTrack(id: number): Promise<boolean> {
+		return this.getTrackJSON(id).then(json => DZCrypt.downloadTrack(json))
 	}
 
 	getTrackJSON(id: string | number): Promise<JSON> {
@@ -213,18 +222,3 @@ class DZApi {
 		})
 	}
 }
-
-async function entry() {
-	try {
-		const auth = await AuthObject.getNewAuth()
-		const api = new DZApi(auth)
-
-		const search = await api.search('Nobody A little')
-		const info = await api.getTrackJSON(search[0]['SNG_ID'])
-		const ret = await DZCrypt.downloadTrack(info)
-	} catch (err) {
-		console.log(err)
-	}
-}
-
-entry()

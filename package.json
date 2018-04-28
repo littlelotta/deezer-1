@@ -1,0 +1,16 @@
+{
+	"name": "deezer",
+	"version": "1.0.0",
+	"description": "Deezer Downloader",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CupCakeArmy/deezer.git"
+	},
+	"keywords": [],
+	"author": "Niccolo Borgioli",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/CupCakeArmy/deezer/issues"
+	},
+	"homepage": "https://github.com/CupCakeArmy/deezer#readme"
+}

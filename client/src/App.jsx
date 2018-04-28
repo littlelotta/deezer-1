@@ -1,21 +1,17 @@
 import React from 'react'
 
-// import TodoList from './containers/TodoList'
-// import TodoForm from './containers/TodoForm'
-import NavTab from './containers/NavTab'
+import Tabs from './containers/Tabs'
+
+export const URL = 'http://localhost:3000'
 
 export default () => (
-	<div>
-		<section className="section">
-			<div className="container">
-				<div className="columns is-mobile">
-					<div className="column is-hidden-mobile" />
-					<div className="column is-12-mobile is-8-tablet is-5-desktop">
-						<NavTab />
-					</div>
-					<div className="column is-hidden-mobile" />
-				</div>
+	<div className="container">
+		<div className="columns is-mobile">
+			<div className="column is-hidden-mobile" />
+			<div className="column is-12-mobile is-10-tablet is-9-desktop is-8-widescreen is-7-fullhd">
+				<Tabs />
 			</div>
-		</section>
+			<div className="column is-hidden-mobile" />
+		</div>
 	</div>
 )

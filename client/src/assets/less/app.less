@@ -1,0 +1,43 @@
+hr {
+    height: 1px;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    flex-direction: row;
+    >.shrink {
+        flex: 0 1 auto;
+    }
+    >.grow {
+        flex: 1 0;
+    }
+}
+
+#spacer {
+    height: 4em;
+}
+
+.result {
+    margin-bottom: 1em;
+    .info {
+        padding: .5em 1em;
+        flex-direction: column;
+    }
+    .secondRow {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .dl-tags {
+        overflow-x: auto;
+        overflow-y: hidden;
+        .dl-btn {
+            cursor: pointer;
+            &:hover {
+                opacity: .9;
+            }
+        }
+    }
+}

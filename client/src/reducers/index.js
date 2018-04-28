@@ -2,8 +2,8 @@ import {
 	combineReducers
 } from 'redux'
 
-import Todo from './Todo'
+import Tab from './Tab'
 
 export default combineReducers({
-	Todo
+	Tab
 })
