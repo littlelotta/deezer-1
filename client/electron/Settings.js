@@ -3,13 +3,13 @@ const {
 } = require('electron')
 const fs = require('fs')
 const path = require('path')
-const dlf = require('downloads-folder')
 
 module.exports = class Settings {
 
 	static getFileName() {
 		return path.join(app.getPath('userData'), 'settings.json')
 	}
+
 	static write(obj) {
 		fs.writeFileSync(
 			this.getFileName(),
@@ -31,7 +31,17 @@ module.exports = class Settings {
 		}
 	}
 
-	static getCurrentDownloadDir() {
-		return this.read()['dlDir'] || dlf()
+	static get(attr, init) {
+		let val = init
+		const cur = this.read()[attr]
+		if (cur !== undefined)
+			val = cur
+		return val
+	}
+
+	static set(attr, dim) {
+		this.write({
+			[attr]: dim
+		})
 	}
 }
