@@ -1,11 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "@types/express": "^4",
-    "@types/node": "^10.0.0",
-    "@types/request": "^2",
-    "downloads-folder": "^1.0.1",
-    "express": "^4",
     "node-id3": "^0",
     "request": "^2"
   },
@@ -16,6 +11,8 @@
     "dev": "tsc; node ./dist/server.js"
   },
   "devDependencies": {
-    "typescript": "^2.8.3"
+    "typescript": "^2",
+    "@types/node": "^9",
+    "@types/request": "^2"
   }
 }
