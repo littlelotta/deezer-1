@@ -76,8 +76,6 @@ app.on('ready', async () => {
 		Settings.set('pos', win.getPosition())
 	})
 
-	win.toggleDevTools()
-
 	win.on('closed', () => {
 		win = null
 	})
