@@ -1,25 +1,10 @@
 import React, { Component } from 'react'
-
+import { ipcRenderer } from 'electron'
 import { fmt } from 'human-duration'
-import hf from 'human-format'
-import { URL } from '../App'
+
+import DownloadButton from './DownloadButton'
 
 export default class extends Component {
-
-	constructor(props) {
-		super(props)
-
-		this.dl = this.dl.bind(this)
-	}
-
-	dl(id) {
-		fetch(`${URL}/download/${id}`)
-			.then(response => response.json())
-			.then(data => console.log(data))
-			.finally(_ => {
-
-			})
-	}
 
 	render() {
 		const { SNG_TITLE, ART_NAME, ALB_TITLE, ALB_PICTURE, DURATION, FILESIZE_MP3_320, FILESIZE_FLAC, SNG_ID } = this.props
@@ -54,24 +39,8 @@ export default class extends Component {
 								<span className="tag"><i className="icon ion-ios-information-outline" /> Track</span>
 							</div>
 						</div>
-						<div className="control">
-							<div className="tags has-addons dl-btn" onClick={() => this.dl(SNG_ID)}>
-								<span className="tag is-dark">
-									<span className="is-hidden-mobile">{hf(parseInt(FILESIZE_MP3_320), { separator: '' })}</span>
-									<i className="icon ion-arrow-down-c" />
-								</span>
-								<span className="tag is-success ">MP3 <i className="icon ion-stats-bars" /></span>
-							</div>
-						</div>
-						<div className="control">
-							<div className="tags has-addons dl-btn">
-								<span className="tag is-dark">
-									<span className="is-hidden-mobile">{hf(parseInt(FILESIZE_FLAC), { separator: '' })}</span>
-									<i className="icon ion-arrow-down-c" />
-								</span>
-								<span className="tag is-success ">FLAC<i className="icon ion-stats-bars" /></span>
-							</div>
-						</div>
+						<DownloadButton {...{ FILESIZE_MP3_320, FILESIZE_FLAC, SNG_ID, fmt: 'mp3' }} />
+						<DownloadButton {...{ FILESIZE_MP3_320, FILESIZE_FLAC, SNG_ID, fmt: 'flac' }} />
 					</div>
 				</div>
 			</article>

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { ipcRenderer } from 'electron'
 
 import SearchResult from './SearchResult'
-import { URL } from '../App'
 
 class SearchTab extends Component {
 
@@ -18,20 +18,19 @@ class SearchTab extends Component {
 	}
 
 	search(e) {
-		if (e !== undefined)
-			this.setState({ input: e.target.value })
+		if (e !== undefined) this.setState({ input: e.target.value })
 		if (this.state.isLoading === true) return
-		this.setState({ isLoading: true })
 
-		const cur = String(this.state.input)
-		fetch(`${URL}/search/${cur}`)
-			.then(response => response.json())
-			.then(data => this.setState({ results: data }))
-			.finally(_ => {
-				this.setState({ isLoading: false })
-				if (cur !== this.state.input)
-					this.search()
-			})
+		this.setState({
+			isLoading: true,
+			lastSearch: this.state.input
+		})
+		ipcRenderer.send('API', { action: 'search', payload: this.state.lastSearch })
+		ipcRenderer.once('API', (event, arg) => {
+			this.setState({ isLoading: false, results: arg })
+			if (this.state.lastSearch !== this.state.input)
+				this.search()
+		})
 	}
 
 	render() {
