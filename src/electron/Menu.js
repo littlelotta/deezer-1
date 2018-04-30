@@ -16,6 +16,7 @@ module.exports = [{
 		type: 'separator'
 	}, {
 		label: 'Quit',
+		accelerator: 'CmdOrCtrl+Q',
 		click: app.quit
 	}]
 }, {
