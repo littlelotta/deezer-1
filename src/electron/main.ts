@@ -1,21 +1,19 @@
-const {
+import {
 	app,
 	BrowserWindow,
 	Menu,
 	ipcMain
-} = require('electron')
-const path = require('path')
-const url = require('url')
-const dlf = require('downloads-folder')
+} from 'electron'
+import * as path from 'path'
+import * as url from 'url'
 
-const Settings = require('./Settings')
+import DLF from './dlFolder'
+import Settings from './Settings'
+import DZApi, { FILE_TYPES } from '../deezer/deezer'
 
-const DZApi = require('../../deezer/dist/deezer').default
-const FILE_TYPES = require('../../deezer/dist/deezer').FILE_TYPES
+let api: DZApi
 
-let api
-
-function getFileType(fmt) {
+function getFileType(fmt: string) {
 	switch (fmt) {
 		case 'mp3':
 			return FILE_TYPES.MP3_320
@@ -26,19 +24,28 @@ function getFileType(fmt) {
 	}
 }
 
-ipcMain.on('API', async (event, {
-	action,
-	payload
-}) => {
+type IpcEvent = {
+	sender: {
+		send: (channel: string, data: any) => void
+	}
+}
+ipcMain.on('API', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
 	let ret = undefined
 	switch (action) {
 
 		case 'search':
-			ret = await api.search(payload)
+			try {
+				ret = await api.search(payload)
+			} catch (e) {
+				ret = []
+			}
 			break
-
 		case 'dl':
-			ret = await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
+			try {
+				ret = await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
+			} catch (e) {
+				ret = false
+			}
 			break
 	}
 	event.sender.send('API', ret)
@@ -48,11 +55,11 @@ app.on('ready', async () => {
 
 	Menu.setApplicationMenu(Menu.buildFromTemplate(require('./Menu')))
 
-	if (Settings.get('dlDir'), false) Settings.set('dlDir', dlf())
+	if (Settings.get('dlDir') === undefined) Settings.set('dlDir', DLF())
 
 	const pos = Settings.get('pos', [50, 50])
 	const dim = Settings.get('dim', [450, 800])
-	win = new BrowserWindow({
+	const win = new BrowserWindow({
 		x: pos[0],
 		y: pos[1],
 		width: dim[0],
@@ -76,12 +83,11 @@ app.on('ready', async () => {
 		Settings.set('pos', win.getPosition())
 	})
 
-	win.on('closed', () => {
-		win = null
-	})
+	win.webContents.openDevTools()
 
 	try {
 		api = await DZApi.newAsync()
+		console.log('API: Ready')
 	} catch (e) {
 		console.log('Could not initialize API')
 		app.quit()

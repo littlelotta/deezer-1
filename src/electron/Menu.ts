@@ -1,9 +1,5 @@
-const {
-	app,
-	dialog,
-	shell
-} = require('electron')
-const Settings = require('./Settings')
+import { app, dialog, shell } from 'electron'
+import Settings from './Settings'
 
 module.exports = [{
 	label: 'Deezer Downloader',

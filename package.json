@@ -13,27 +13,24 @@
     "url": "https://github.com/CupCakeArmy/deezer/issues"
   },
   "homepage": "https://github.com/CupCakeArmy/deezer#readme",
-  "main": "./dist/main.js",
+  "main": "./dist/electron/main.js",
   "dependencies": {
-    "downloads-folder": "^1",
+    "@types/electron": "^1.6.10",
     "electron": "^1",
     "human-duration": "^1",
     "human-format": "^0",
+    "node-id3": "^0",
     "react": "^16",
     "react-dom": "^16",
     "react-redux": "^5",
     "redux": "^4",
-    "node-id3": "^0",
     "request": "^2"
   },
   "scripts": {
-    "watch": "tsc --watch",
-    "build": "tsc",
-    "run": "node ./dist/server.js",
-    "build:dev": "webpack -d",
-    "build:prod": "webpack -p",
-    "build:electron": "webpack -d --config webpack.electron.js",
-    "start": "npm run build:electron && electron ."
+    "watch": "tsc --watch & webpack -d -w",
+    "build:dev": "tsc && webpack -d",
+    "build:prod": "tsc && webpack -p",
+    "start": "electron ."
   },
   "devDependencies": {
     "typescript": "^2",
@@ -53,8 +50,6 @@
     "less-loader": "^4",
     "mini-css-extract-plugin": "^0",
     "webpack": "^4",
-    "webpack-cli": "^2",
-    "webpack-dev-server": "^3",
-    "webpack-merge": "^4"
+    "webpack-cli": "^2"
   }
 }
