@@ -6,13 +6,9 @@ const {
 } = require('electron')
 const path = require('path')
 const url = require('url')
-// const {
-// 	requireTaskPool
-// } = require('electron-remote')
 const dlf = require('downloads-folder')
 
 const Settings = require('./Settings')
-// const api = requireTaskPool(require.resolve('./bg'))
 
 const DZApi = require('../../deezer/dist/deezer').default
 const FILE_TYPES = require('../../deezer/dist/deezer').FILE_TYPES
