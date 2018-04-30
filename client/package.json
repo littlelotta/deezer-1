@@ -3,32 +3,39 @@
   "scripts": {
     "build:dev": "webpack -d",
     "build:prod": "webpack -p",
-    "dev": "webpack-dev-server -d"
+    "build:electron": "webpack -d --config webpack.electron.js",
+    "dev": "webpack-dev-server -d",
+    "start": "npm run build:electron && electron ."
   },
+  "main": "./electron/main.js",
   "dependencies": {
-    "human-duration": "^1.0.1",
-    "human-format": "^0.10.0",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-redux": "latest",
-    "redux": "latest"
+    "downloads-folder": "^1",
+    "electron": "^1",
+    "electron-remote": "^1.2.0",
+    "human-duration": "^1",
+    "human-format": "^0",
+    "react": "^16",
+    "react-dom": "^16",
+    "react-redux": "^5",
+    "redux": "^4"
   },
   "devDependencies": {
-    "babel-core": "latest",
-    "babel-loader": "latest",
-    "babel-plugin-transform-class-properties": "latest",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-latest": "latest",
-    "babel-preset-react": "latest",
-    "css-loader": "^0.28.11",
-    "file-loader": "latest",
-    "html-loader": "latest",
-    "html-webpack-plugin": "latest",
-    "less": "^3.0.2",
-    "less-loader": "^4.1.0",
-    "mini-css-extract-plugin": "^0.4.0",
-    "webpack": "latest",
-    "webpack-cli": "latest",
-    "webpack-dev-server": "latest"
+    "babel-core": "^6",
+    "babel-loader": "^7",
+    "babel-plugin-transform-class-properties": "^6",
+    "babel-plugin-transform-object-rest-spread": "^6",
+    "babel-preset-latest": "^6",
+    "babel-preset-react": "^6",
+    "css-loader": "^0",
+    "file-loader": "^1",
+    "html-loader": "^0",
+    "html-webpack-plugin": "^3",
+    "less": "^3",
+    "less-loader": "^4",
+    "mini-css-extract-plugin": "^0",
+    "webpack": "^4",
+    "webpack-cli": "^2",
+    "webpack-dev-server": "^3",
+    "webpack-merge": "^4"
   }
 }
