@@ -2,6 +2,8 @@ import * as Request from 'request'
 import { fork } from 'child_process'
 import { join } from 'path'
 
+const config = require(__dirname + '/../../config.json')
+
 const request = Request.defaults({
 	jar: Request.jar(),
 	headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36' }
@@ -33,8 +35,8 @@ class AuthObject {
 				method: 'post',
 				form: {
 					type: 'login',
-					mail: 'tibegestep@hu4ht.com',
-					password: 'tibegestep@hu4ht.com',
+					mail: config.deezer.mail,
+					password: config.deezer.password,
 				}
 			}, (err, res, body) => {
 				if (body !== 'success') throw new Error('Could not log in')

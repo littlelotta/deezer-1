@@ -1,0 +1,11 @@
+{
+	"spotify": {
+		"client_id": "my_client_id",
+		"client_secret": "my_secret",
+		"redirect_uri": "http://localhost:8888/callback"
+	},
+	"deezer": {
+		"mail": "my_email",
+		"password": "my_password"
+	}
+}
