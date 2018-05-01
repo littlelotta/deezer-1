@@ -91,7 +91,7 @@ export default class DZApi {
 		const query: { 'QUERY': string, 'TYPES': { [prop: string]: boolean }, 'NB': number } = {
 			'QUERY': q,
 			'TYPES': {},
-			'NB': 10
+			'NB': 25
 		}
 		for (const cat of categories) query['TYPES'][cat] = true
 
