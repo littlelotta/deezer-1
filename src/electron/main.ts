@@ -40,9 +40,16 @@ ipcMain.on('API', async (event: IpcEvent, { action, payload }: { action: string,
 				ret = []
 			}
 			break
-		case 'dl':
+		case 'dl:song':
 			try {
 				ret = await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
+			} catch (e) {
+				ret = false
+			}
+			break
+		case 'dl:album':
+			try {
+				ret = await api.dlAlbum(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
 			} catch (e) {
 				ret = false
 			}
@@ -83,7 +90,7 @@ app.on('ready', async () => {
 		Settings.set('pos', win.getPosition())
 	})
 
-	win.webContents.openDevTools()
+	// win.webContents.openDevTools()
 
 	try {
 		api = await DZApi.newAsync()

@@ -15,10 +15,11 @@
   "homepage": "https://github.com/CupCakeArmy/deezer#readme",
   "main": "./dist/electron/main.js",
   "dependencies": {
-    "@types/electron": "^1.6.10",
+    "ajv": "^6.4.0",
     "electron": "^1",
     "human-duration": "^1",
     "human-format": "^0",
+    "mkdir-recursive": "^0.4.0",
     "node-id3": "^0",
     "react": "^16",
     "react-dom": "^16",
@@ -33,7 +34,7 @@
     "start": "electron ."
   },
   "devDependencies": {
-    "typescript": "^2",
+    "@types/electron": "^1",
     "@types/node": "^9",
     "@types/request": "^2",
     "babel-core": "^6",
@@ -49,6 +50,7 @@
     "less": "^3",
     "less-loader": "^4",
     "mini-css-extract-plugin": "^0",
+    "typescript": "^2",
     "webpack": "^4",
     "webpack-cli": "^2"
   }

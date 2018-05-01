@@ -1,7 +1,8 @@
 import * as request from 'request'
-import { createWriteStream } from 'fs'
+import { createWriteStream, accessSync, constants } from 'fs'
 import { join } from 'path'
 import * as ID3 from 'node-id3'
+import { mkdirSync } from 'mkdir-recursive'
 
 import { hex_md5 } from './md5'
 import { Blowfish } from './blowfish'
@@ -69,14 +70,6 @@ class DZCrypt {
 	}
 
 	private static decryptTrack(data: any, key: number[]): Promise<Uint8Array> {
-		// return new Promise(res => {
-		// 	const compute = fork(__dirname + '/fork/decrypt.js')
-		// 	compute.send({ data, key })
-		// 	compute.on('message', (buffer: Uint8Array) => {
-		// 		res(buffer)
-		// 	})
-		// })
-
 		return new Promise(res => {
 			data = Uint8Array.from(data)
 			var L = data.length
@@ -127,6 +120,13 @@ class DZCrypt {
 				break;
 		}
 
+		try {
+			mkdirSync(dir)
+			accessSync(dir, constants.W_OK)
+		} catch (e) {
+			console.log('Can\'t write to directory')
+			return false
+		}
 		const filename = join(dir, `${track.ART_NAME} - ${track.SNG_TITLE}.${ext}`)
 		this.writeDataToFile(decryptedData, filename)
 		await postAction(track, filename)

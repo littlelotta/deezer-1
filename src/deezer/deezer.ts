@@ -1,5 +1,6 @@
 import * as Request from 'request'
 import { fork } from 'child_process'
+import { join } from 'path'
 
 const request = Request.defaults({
 	jar: Request.jar(),
@@ -15,7 +16,6 @@ export enum FILE_TYPES {
 class AuthObject {
 	static rexp = /checkForm ?= ?(\"|\').{32}\1/g
 
-	// constructor(public token: string, public sid: string) { }
 	constructor(public token: string) { }
 
 	private static extractTokenFromHtml(html: string): string {
@@ -57,29 +57,44 @@ class AuthObject {
 
 export default class DZApi {
 
+	constructor(public auth: AuthObject) { }
+
 	public static async newAsync(): Promise<DZApi> {
 		return new this(await AuthObject.getNewAuth())
 	}
 
-	constructor(public auth: AuthObject) { }
+	private static getJSONAttr(from: string): string {
+		switch (from) {
+			case 'Track':
+				return 'sng_id'
+			case 'Album':
+				return 'alb_id'
+			default: return ''
+		}
+	}
+
+	private getJSON(type: string, id: number): Promise<any> {
+		return new Promise((resolve, reject) => {
+			request({
+				url: `https://www.deezer.com/ajax/gw-light.php?method=deezer.page${type}&input=3&api_version=1.0&api_token=${this.auth.token}`,
+				method: 'POST',
+				json: { [DZApi.getJSONAttr(type)]: id, "lang": "en", "tab": 0 }
+			}, (err, res, body) => {
+				if (Object.keys(body.results).length === 0) reject()
+				resolve(body.results)
+			})
+		})
+	}
 
 	public search(q: string): Promise<any[]> {
-		const query = {
+		const categories = ['ALBUM', 'TRACK']
+		const query: { 'QUERY': string, 'TYPES': { [prop: string]: boolean }, 'NB': number } = {
 			'QUERY': q,
-			'TYPES': {
-				'ARTIST': false,
-				'ALBUM': true,
-				'TRACK': false,
-				'PLAYLIST': false,
-				'RADIO': false,
-				'SHOW': false,
-				'TAG': false,
-				'USER': false,
-				'CHANNEL': false,
-				'LIVESTREAM': false
-			},
-			'NB': 25
+			'TYPES': {},
+			'NB': 10
 		}
+		for (const cat of categories) query['TYPES'][cat] = true
+
 		return new Promise((resolve, reject) => {
 			if (q == '') return []
 			request({
@@ -88,7 +103,10 @@ export default class DZApi {
 				json: query
 			}, (err, res, body) => {
 				if (Object.keys(body.results).length === 0) resolve([])
-				resolve(body.results.TRACK)
+
+				let ret: any[] = []
+				for (const cat of categories) ret = ret.concat(body.results[cat])
+				resolve(ret)
 			})
 		})
 	}
@@ -96,28 +114,26 @@ export default class DZApi {
 	public dlTrack(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<boolean> {
 		return new Promise(res => {
 			const compute = fork(__dirname + '/crypt.js')
-			this.getTrackJSON(id).then(json => compute.send({ json, fmt, path }))
+			this.getJSON('Track', id).then(json => compute.send({ json: json.DATA, fmt, path }))
 			compute.on('message', (success: boolean) => {
 				res(success)
 			})
 		})
 	}
 
-	getTrackJSON(id: string | number): Promise<JSON> {
-		return new Promise((resolve, reject) => {
-			if (id == '') return []
-			request({
-				url: `https://www.deezer.com/ajax/gw-light.php?method=deezer.pageTrack&input=3&api_version=1.0&api_token=${this.auth.token}`,
-				method: 'POST',
-				json: { "sng_id": id, "lang": "en", "tab": 0 }
-			}, (err, res, body) => {
-				if (Object.keys(body.results).length === 0) reject('Bad request')
-				resolve(body.results.DATA)
+	public dlAlbum(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<boolean> {
+		return new Promise(res => {
+			this.getJSON('Album', id).then(json => {
+				const newPath = join(path, json.DATA.ALB_TITLE)
+				const allTracks: Promise<boolean>[] = []
+				for (const track of json.SONGS.data)
+					allTracks.push(this.dlTrack(track.SNG_ID, fmt, newPath))
+				Promise.all(allTracks).then(_ => { res(json) })
 			})
 		})
 	}
 
-	static getTrackCover(id: string, size = 1500): Promise<Buffer> {
+	public static getTrackCover(id: string, size = 1500): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
 			request({
 				url: `https://e-cdns-images.dzcdn.net/images/cover/${id}/${size}x${size}.jpg`,
