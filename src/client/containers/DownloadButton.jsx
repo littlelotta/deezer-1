@@ -39,7 +39,7 @@ export default class extends Component {
 		return (
 			<div className="control">
 				<div className="tags has-addons dl-btn" onClick={() => this.dl(id, fmt, type)}>
-					<span className="tag is-dark">
+					<span className="tag">
 						{this.state.state === 1 ?
 							(<span>Downloading...</span>) :
 							(<span>
@@ -47,7 +47,7 @@ export default class extends Component {
 								<i className="icon ion-arrow-down-c" />
 							</span>)}
 					</span>
-					<span className="tag is-success is-uppercase">{fmt} <i className="icon ion-stats-bars is-hidden-mobile" /></span>
+					<span className="tag is-dark is-uppercase">{fmt} <i className="icon ion-stats-bars is-hidden-mobile" /></span>
 				</div>
 			</div>
 		)
