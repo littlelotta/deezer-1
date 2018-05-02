@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { ipcRenderer } from 'electron'
 import { fmt } from 'human-duration'
 
 import DownloadButton from './DownloadButton'
+import Box from './Box'
 
 export default class extends Component {
 
@@ -21,7 +21,9 @@ export default class extends Component {
 	render() {
 		const { __TYPE__, SNG_TITLE, ART_NAME, ALB_TITLE, ALB_ID, ALB_PICTURE, DURATION, FILESIZE_MP3_320, FILESIZE_FLAC, SNG_ID } = this.props
 
-		const cur = {}
+		const cur = {
+			img: ALB_PICTURE
+		}
 		switch (__TYPE__) {
 			case 'album':
 				cur.id = ALB_ID
@@ -38,35 +40,11 @@ export default class extends Component {
 				cur.topright = (<span><span className="has-text-weight-semibold">{this.duration(DURATION)}</span> <span className="tag is-info is-capitalized">{__TYPE__}</span></span>)
 				break
 		}
+		cur.bottom = (<div className="shrink field is-grouped  dl-tags">
+			<DownloadButton {...{ type: __TYPE__, id: cur.id, fmt: 'mp3', size: FILESIZE_MP3_320 }} />
+			<DownloadButton {...{ type: __TYPE__, id: cur.id, fmt: 'flac', size: FILESIZE_FLAC }} />
+		</div>)
 
-		return (
-			<a className="result box flex has-background-white">
-				<div className="shrink">
-					<p className="image is-96x96 is-hidden-desktop">
-						<img src={`https://e-cdns-images.dzcdn.net/images/cover/${ALB_PICTURE}/500x500.jpg`} />
-					</p>
-					<p className="image is-128x128 is-hidden-touch">
-						<img src={`https://e-cdns-images.dzcdn.net/images/cover/${ALB_PICTURE}/500x500.jpg`} />
-					</p>
-				</div>
-				<div className="info grow flex">
-					<div className="grow">
-						<span className="title is-size-4-desktop is-size-5-touch">{cur.top}</span>
-						<span className="is-pulled-right">{cur.topright}</span>
-						<br />
-						<div className="secondRow">
-							<span className="subtitle is-size-5-desktop is-size-6-touch has-text-info">{cur.left}</span>
-							<span> </span>
-							<span className="is-size-6-desktop is-size-7-touch">{cur.right}</span>
-						</div>
-					</div>
-					<div className="shrink field is-grouped  dl-tags">
-						<DownloadButton {...{ type: __TYPE__, id: cur.id, fmt: 'mp3', size: FILESIZE_MP3_320 }} />
-						<DownloadButton {...{ type: __TYPE__, id: cur.id, fmt: 'flac', size: FILESIZE_FLAC }} />
-					</div>
-				</div>
-			</a>
-		)
-
+		return <Box {...cur} />
 	}
 } 
