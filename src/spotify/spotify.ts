@@ -70,7 +70,7 @@ export class Auth {
 				shell.openExternal('https://accounts.spotify.com/authorize?' + stringify({
 					response_type: 'code',
 					client_id: config.spotify.client_id,
-					scope: 'user-read-private',
+					scope: 'playlist-read-private',
 					redirect_uri: config.spotify.redirect_uri,
 				}))
 			}
