@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ipcRenderer } from 'electron'
 
-import { getImageFromPlaylist } from './Spotify'
 import Box from './Box'
+import DownloadButton from './DownloadButton'
+import { getImageFromPlaylist } from './Spotify'
 import { duration } from './SearchResult'
 
 export const separator = 'playlist:'
@@ -54,6 +55,10 @@ class Spotify extends Component {
 					topright: (<span className="tag is-info is-capitalized">Playlist</span>),
 					left: (<i className="icon ion-music-note" aria-hidden="true" />),
 					right: (<span className="has-text-weight-semibold">{this.state.tracks.total}</span>),
+					bottom: (<div className="shrink field is-grouped  dl-tags">
+						<DownloadButton {...{ type: 'playlist', id: this.href, fmt: 'mp3' }} />
+						<DownloadButton {...{ type: 'playlist', id: this.href, fmt: 'flac' }} />
+					</div>)
 				}} />
 				<div className="box">
 					<table className="songs table">
