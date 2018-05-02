@@ -74,6 +74,12 @@ ipcMain.on('Spotify', async (event: IpcEvent, { action, payload }: { action: str
 		case 'get:own:playlists':
 			ret = await sapi.getOwnPlaylists()
 			break
+		case 'get:playlist':
+			ret = await sapi.getLink(payload.link)
+			break
+		case 'get:iterable':
+			ret = await sapi.getIterable(payload.iterable)
+			break
 	}
 	event.sender.send('Spotify', ret)
 })
