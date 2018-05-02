@@ -1,5 +1,6 @@
 import { app, dialog, shell } from 'electron'
 import Settings from './Settings'
+import { dirname } from 'path'
 
 module.exports = [{
 	label: 'Deezer Downloader',
@@ -26,6 +27,17 @@ module.exports = [{
 			})
 			if (whereToSave !== undefined && Array.isArray(whereToSave))
 				Settings.set('dlDir', whereToSave[0])
+		}
+	}, {
+		label: 'Reset Settings',
+		click: () => {
+			Settings.reset()
+			app.quit()
+		}
+	}, {
+		label: 'Open Settings',
+		click: () => {
+			shell.openItem(dirname(Settings.getFileName()))
 		}
 	}]
 }]
