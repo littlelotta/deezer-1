@@ -16,13 +16,15 @@ export default class extends Component {
 			return
 
 		this.setState({ state: 1 })
-		ipcRenderer.send('API', { action: `dl:${type}`, payload: { id, fmt } })
-		ipcRenderer.once('API', (event, arg) => {
-			console.log(arg)
+		ipcRenderer.send('Deezer', { action: `dl:${type}`, payload: { id, fmt } })
+		const listenter = (event, arg) => {
+			if (arg !== false && arg != id) return
+			ipcRenderer.removeListener('Deezer', listenter)
 			this.setState({ state: 0 })
 			if (arg === false)
 				alert('Error downloading')
-		})
+		}
+		ipcRenderer.on('Deezer', listenter)
 	}
 
 	mkSize(num) {

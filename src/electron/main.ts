@@ -10,8 +10,10 @@ import * as url from 'url'
 import DLF from './dlFolder'
 import Settings from './Settings'
 import DZApi, { FILE_TYPES } from '../deezer/deezer'
+import * as Spotify from '../spotify/spotify'
 
 let api: DZApi
+let sapi: Spotify.API
 
 function getFileType(fmt: string) {
 	switch (fmt) {
@@ -29,7 +31,7 @@ type IpcEvent = {
 		send: (channel: string, data: any) => void
 	}
 }
-ipcMain.on('API', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
+ipcMain.on('Deezer', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
 	let ret = undefined
 	switch (action) {
 
@@ -42,20 +44,38 @@ ipcMain.on('API', async (event: IpcEvent, { action, payload }: { action: string,
 			break
 		case 'dl:song':
 			try {
-				ret = await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
+				if (await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir')) === true) ret = payload.id
+				else throw new Error()
 			} catch (e) {
 				ret = false
 			}
 			break
 		case 'dl:album':
 			try {
-				ret = await api.dlAlbum(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
+				if (await api.dlAlbum(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))) ret = payload.id
+				else throw new Error()
 			} catch (e) {
 				ret = false
 			}
 			break
 	}
-	event.sender.send('API', ret)
+	event.sender.send('Deezer', ret)
+})
+
+ipcMain.on('Spotify', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
+	let ret = undefined
+	switch (action) {
+
+		case 'login':
+			sapi = new Spotify.API(await Spotify.Auth.login())
+			ret = await sapi.getOwnProfile()
+			break
+
+		case 'get:own:playlists':
+			ret = await sapi.getOwnPlaylists()
+			break
+	}
+	event.sender.send('Spotify', ret)
 })
 
 app.on('ready', async () => {
@@ -90,7 +110,7 @@ app.on('ready', async () => {
 		Settings.set('pos', win.getPosition())
 	})
 
-	// win.webContents.openDevTools()
+	win.webContents.openDevTools()
 
 	try {
 		api = await DZApi.newAsync()
