@@ -3,10 +3,10 @@ import React, { Component } from 'react'
 export default class extends Component {
 
 	render() {
-		const { img, top, topright, left, right, bottom } = this.props
+		const { img, top, topright, left, right, bottom, onClick } = this.props
 
 		return (
-			<a className="custbox box flex has-background-white">
+			<a className="custbox box flex has-background-white" onClick={onClick}>
 				<div className="shrink">
 					<p className="image is-96x96 is-hidden-desktop">
 						<img src={img} />

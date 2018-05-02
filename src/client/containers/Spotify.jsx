@@ -53,17 +53,14 @@ class Spotify extends Component {
 		else return (<div className="section no-padding-top">
 			{this.state.playlists.map(playlist => (
 				<Box {...{
+					onClick: () => this.props.switchTab(`playlist:${playlist.href}`),
 					img: getImageFromPlaylist(playlist),
 					top: playlist.name,
 					topright: (<span className="tag is-info is-capitalized">Playlist</span>),
 					left: (<i className="icon ion-music-note" aria-hidden="true" />),
 					right: (<span className="has-text-weight-semibold">{playlist.tracks.total}</span>),
 				}}
-					key={playlist.id}
-					onClick={() => {
-						console.log('test')
-						this.props.switchTab(`playlist:${playlist.href}`)
-					}} />
+					key={playlist.id} />
 			))}
 		</div>)
 	}
