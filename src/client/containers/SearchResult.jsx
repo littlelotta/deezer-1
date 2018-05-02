@@ -28,18 +28,19 @@ export default class extends Component {
 				cur.top = ALB_TITLE
 				cur.left = ART_NAME
 				cur.right = ''
+				cur.topright = (<span><span className="tag is-info is-capitalized">{__TYPE__}</span></span>)
 				break
 			case 'song':
 				cur.id = SNG_ID
 				cur.top = SNG_TITLE
 				cur.left = ART_NAME
 				cur.right = ALB_TITLE
-				cur.topright = (<span><span className="has-text-weight-semibold">{this.duration(DURATION)}</span> <span className="tag"><i className="icon ion-ios-information-outline" />{__TYPE__}</span></span>)
+				cur.topright = (<span><span className="has-text-weight-semibold">{this.duration(DURATION)}</span> <span className="tag is-info is-capitalized">{__TYPE__}</span></span>)
 				break
 		}
 
 		return (
-			<article className="result flex has-background-white">
+			<a className="result box flex has-background-white">
 				<div className="shrink">
 					<p className="image is-96x96 is-hidden-desktop">
 						<img src={`https://e-cdns-images.dzcdn.net/images/cover/${ALB_PICTURE}/500x500.jpg`} />
@@ -64,7 +65,7 @@ export default class extends Component {
 						<DownloadButton {...{ type: __TYPE__, id: cur.id, fmt: 'flac', size: FILESIZE_FLAC }} />
 					</div>
 				</div>
-			</article>
+			</a>
 		)
 
 	}

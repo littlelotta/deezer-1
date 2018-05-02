@@ -78,7 +78,7 @@ class SearchTab extends Component {
 	render() {
 		if (this.props.activeTab !== 'search') return (null)
 		else return (
-			<div className="box is-radiusless has-background-light is-shadowless">
+			<div className="section" id="search">
 				<div className="field">
 					<div className={`control ${this.state.isLoading ? 'is-loading' : ''}`}>
 						<input className="input" type="text" placeholder="Search..." onChange={this.search} />
@@ -88,6 +88,7 @@ class SearchTab extends Component {
 					<a className="button is-small" onClick={this.removeFilters}>Reset filters</a>
 					{Object.keys(this.state.filters).map(filter => <a key={filter} className={`button is-small is-capitalized ${this.state.filters[filter] ? 'is-success' : 'is-danger'}`} onClick={() => this.toggleFilter(filter)}>{filter}</a>)}
 				</div>
+				<hr />
 				<div className="results">
 					{this.state.results.filter((item) => {
 						return this.state.filters[item.__TYPE__]

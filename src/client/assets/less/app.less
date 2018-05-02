@@ -1,3 +1,7 @@
+::-webkit-scrollbar {
+    display: none;
+}
+
 .flex {
     display: flex;
     flex-wrap: nowrap;
@@ -15,24 +19,28 @@
     -webkit-app-region: drag
 }
 
-.result {
-    margin-bottom: 1em;
-    .info {
-        padding: .5em 1em;
-        flex-direction: column;
-    }
-    .secondRow {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    .dl-tags {
-        overflow-x: auto;
-        overflow-y: hidden;
-        .dl-btn {
-            cursor: pointer;
-            &:hover {
-                opacity: .9;
+#search {
+    padding-top: 0;
+    .result {
+        padding: 0;
+        margin-bottom: 1em;
+        .info {
+            padding: .5em 1em;
+            flex-direction: column;
+        }
+        .secondRow {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .dl-tags {
+            overflow-x: auto;
+            overflow-y: hidden;
+            .dl-btn {
+                cursor: pointer;
+                &:hover {
+                    opacity: .9;
+                }
             }
         }
     }
