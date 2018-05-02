@@ -50,8 +50,8 @@ class Spotify extends Component {
 				</div>
 			)
 			else return (<div className="section">
-				{this.state.playlists.map((playlist, i) => (
-					<a key={i} className="box" onClick={() => this.props.switchTab(`playlist:${playlist.id}`)}>
+				{this.state.playlists.map(playlist => (
+					<a key={playlist.id} className="box" onClick={() => this.props.switchTab(`playlist:${playlist.id}`)}>
 						<article className="media">
 							<div className="media-left">
 								<figure className="image is-32x32">

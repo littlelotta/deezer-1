@@ -86,12 +86,12 @@ class SearchTab extends Component {
 				</div>
 				<div className="buttons">
 					<a className="button is-small" onClick={this.removeFilters}>Reset filters</a>
-					{Object.keys(this.state.filters).map((filter, i) => <a key={i} className={`button is-small is-capitalized ${this.state.filters[filter] ? 'is-success' : 'is-danger'}`} onClick={() => this.toggleFilter(filter)}>{filter}</a>)}
+					{Object.keys(this.state.filters).map(filter => <a key={filter} className={`button is-small is-capitalized ${this.state.filters[filter] ? 'is-success' : 'is-danger'}`} onClick={() => this.toggleFilter(filter)}>{filter}</a>)}
 				</div>
 				<div className="results">
 					{this.state.results.filter((item) => {
 						return this.state.filters[item.__TYPE__]
-					}).map((result) => <SearchResult {...result} key={getId(result)} />)}
+					}).map(result => <SearchResult {...result} key={this.getId(result)} />)}
 				</div>
 			</div>
 		)
