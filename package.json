@@ -1,6 +1,6 @@
 {
   "name": "deezer",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Deezer Downloader",
   "repository": {
     "type": "git",
@@ -15,12 +15,12 @@
   "homepage": "https://github.com/CupCakeArmy/deezer#readme",
   "main": "./dist/electron/main.js",
   "dependencies": {
-    "ajv": "^6.4.0",
-    "electron": "^1",
+    "express": "^4",
     "human-duration": "^1",
     "human-format": "^0",
-    "mkdir-recursive": "^0.4.0",
+    "mkdir-recursive": "^0",
     "node-id3": "^0",
+    "querystring": "^0",
     "react": "^16",
     "react-dom": "^16",
     "react-redux": "^5",
@@ -28,13 +28,22 @@
     "request": "^2"
   },
   "scripts": {
+    "pack:native": "electron-builder",
+    "pack:mac": "electron-builder --mac",
+    "pack:win": "electron-builder --win",
+    "pack:linux": "electron-builder --linux",
+    "pack:all": "electron-builder -mwl",
     "watch": "tsc --watch & webpack -d -w",
     "build:dev": "tsc && webpack -d",
     "build:prod": "tsc && webpack -p",
     "start": "electron ."
   },
   "devDependencies": {
+    "ajv": "^6",
+    "electron-builder": "^20",
+    "electron": "^1",
     "@types/electron": "^1",
+    "@types/express": "^4",
     "@types/node": "^9",
     "@types/request": "^2",
     "babel-core": "^6",

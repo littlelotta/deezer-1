@@ -4,4 +4,4 @@
 config.json
 
 dist
-public
+out

@@ -1,0 +1,11 @@
+appId: "io.nicco.app.deezer"
+productName: "Deezer Downloader"
+directories:
+  buildResources: "./src"
+  output: "./out"
+mac:
+  target: "zip"
+win:
+  target: "portable"
+linux:
+  target: "AppImage"
