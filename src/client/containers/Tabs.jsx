@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import Switch from './TabSwitch'
 import Search from './SearchTab'
 import Spotify from './Spotify'
-import SpotifyPlaylist from './SpotifyPlaylist'
+import SpotifyPlaylist, { separator } from './SpotifyPlaylist'
 
-export default class extends Component {
+class Tabs extends Component {
 
 	render() {
 		return (
@@ -28,9 +29,9 @@ export default class extends Component {
 					<div className="column is-12-mobile is-10-tablet is-9-desktop is-8-widescreen is-7-fullhd">
 						<Switch />
 
-						<Search />
-						<Spotify />
-						<SpotifyPlaylist />
+						{this.props.activeTab === 'spotify' && <Spotify />}
+						{this.props.activeTab === 'search' && <Search />}
+						{this.props.activeTab.startsWith(separator) && <SpotifyPlaylist />}
 					</div>
 					<div className="column is-hidden-mobile" />
 				</div>
@@ -38,3 +39,9 @@ export default class extends Component {
 		)
 	}
 }
+
+export default connect(
+	state => ({
+		activeTab: state.Tab.active
+	}),
+	dispatcher => ({}))(Tabs)
