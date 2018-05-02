@@ -6,7 +6,7 @@ export default class extends Component {
 		const { img, top, topright, left, right, bottom } = this.props
 
 		return (
-			<a className="result box flex has-background-white">
+			<a className="custbox box flex has-background-white">
 				<div className="shrink">
 					<p className="image is-96x96 is-hidden-desktop">
 						<img src={`https://e-cdns-images.dzcdn.net/images/cover/${img}/500x500.jpg`} />
