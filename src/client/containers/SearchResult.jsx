@@ -30,7 +30,7 @@ export default class extends Component {
 				cur.top = ALB_TITLE
 				cur.left = ART_NAME
 				cur.right = ''
-				cur.topright = (<span><span className="tag is-info is-capitalized">{__TYPE__}</span></span>)
+				cur.topright = (<span className="tag is-info is-capitalized">{__TYPE__}</span>)
 				break
 			case 'song':
 				cur.id = SNG_ID
