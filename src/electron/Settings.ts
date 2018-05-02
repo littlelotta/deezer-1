@@ -10,13 +10,12 @@ export default class Settings {
 		return join(app.getPath('userData'), 'settings.json')
 	}
 
+	private static writeOverwrite(obj: Setting) {
+		writeFileSync(this.getFileName(), JSON.stringify(obj))
+	}
+
 	private static write(obj: Setting) {
-		writeFileSync(
-			this.getFileName(),
-			JSON.stringify(
-				Object.assign(this.read(), obj)
-			)
-		)
+		this.writeOverwrite(Object.assign(this.read(), obj))
 	}
 
 	private static read() {
@@ -27,7 +26,7 @@ export default class Settings {
 		}
 	}
 
-	static get(attr: string, init?: any) {
+	public static get(attr: string, init?: any) {
 		let val = init
 		const cur = this.read()[attr]
 		if (cur !== undefined)
@@ -35,9 +34,14 @@ export default class Settings {
 		return val
 	}
 
-	static set(attr: string, val: any) {
+	public static set(attr: string, val: any) {
 		this.write({
 			[attr]: val
 		})
 	}
+
+	public static reset() {
+		this.writeOverwrite({})
+	}
+
 }
