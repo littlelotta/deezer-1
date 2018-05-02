@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { ipcRenderer } from 'electron'
 
 import { updateTab } from '../actions/Tab'
+import Box from './Box'
 
 export function getImageFromPlaylist(playlist) {
 	try {
@@ -51,21 +52,18 @@ class Spotify extends Component {
 		)
 		else return (<div className="section no-padding-top">
 			{this.state.playlists.map(playlist => (
-				<a key={playlist.id} className="box" onClick={() => this.props.switchTab(`playlist:${playlist.href}`)}>
-					<article className="media">
-						<div className="media-left">
-							<figure className="image is-32x32">
-								<img src={getImageFromPlaylist(playlist)} alt="Image" />
-							</figure>
-						</div>
-						<div className="media-content">
-							<span className="is-size-5">{playlist.name}</span>
-						</div>
-						<div className="media-right">
-							<span className="has-text-weight-semibold">{playlist.tracks.total} <i className="icon ion-music-note" aria-hidden="true" /></span>
-						</div>
-					</article>
-				</a>
+				<Box {...{
+					img: getImageFromPlaylist(playlist),
+					top: playlist.name,
+					topright: (<span className="tag is-info is-capitalized">Playlist</span>),
+					left: (<i className="icon ion-music-note" aria-hidden="true" />),
+					right: (<span className="has-text-weight-semibold">{playlist.tracks.total}</span>),
+				}}
+					key={playlist.id}
+					onClick={() => {
+						console.log('test')
+						this.props.switchTab(`playlist:${playlist.href}`)
+					}} />
 			))}
 		</div>)
 	}
