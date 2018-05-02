@@ -4,19 +4,19 @@ import { fmt } from 'human-duration'
 import DownloadButton from './DownloadButton'
 import Box from './Box'
 
-export default class extends Component {
 
-	duration(length) {
-		const num = parseInt(length)
-		if (num === NaN) return
-		else return fmt(parseInt(length) * 1000)
-			.grading([
-				{ unit: '%', milliseconds: 1000 * 60 },
-				{ unit: x => x < 10 ? `0${x}` : `${x}`, milliseconds: 1000 },
-			])
-			.separator(':')
-			.toString()
-	}
+export function duration(length) {
+	const num = parseInt(length)
+	if (num === NaN) return
+	else return fmt(parseInt(length) * 1000)
+		.grading([
+			{ unit: '%', milliseconds: 1000 * 60 },
+			{ unit: x => x < 10 ? `0${x}` : `${x}`, milliseconds: 1000 },
+		])
+		.separator(':')
+		.toString()
+}
+export default class extends Component {
 
 	render() {
 		const { __TYPE__, SNG_TITLE, ART_NAME, ALB_TITLE, ALB_ID, ALB_PICTURE, DURATION, FILESIZE_MP3_320, FILESIZE_FLAC, SNG_ID } = this.props
@@ -37,7 +37,7 @@ export default class extends Component {
 				cur.top = SNG_TITLE
 				cur.left = ART_NAME
 				cur.right = ALB_TITLE
-				cur.topright = (<span><span className="has-text-weight-semibold">{this.duration(DURATION)}</span> <span className="tag is-info is-capitalized">{__TYPE__}</span></span>)
+				cur.topright = (<span><span className="has-text-weight-semibold">{duration(DURATION)}</span> <span className="tag is-info is-capitalized">{__TYPE__}</span></span>)
 				break
 		}
 		cur.bottom = (<div className="shrink field is-grouped  dl-tags">

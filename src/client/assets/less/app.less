@@ -11,6 +11,9 @@ body {
     flex-wrap: nowrap;
     overflow: hidden;
     flex-direction: row;
+    &.center {
+        align-items: center;
+    }
     >.shrink {
         flex: 0 1 auto;
     }
@@ -46,6 +49,15 @@ body {
             &:hover {
                 opacity: .9;
             }
+        }
+    }
+}
+
+#playlist {
+    .songs {
+        .song {
+            // padding: .5em;
+            // border-bottom: 1px solid #ededed
         }
     }
 }

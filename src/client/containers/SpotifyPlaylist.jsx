@@ -3,8 +3,11 @@ import { connect } from 'react-redux'
 import { ipcRenderer } from 'electron'
 
 import { getImageFromPlaylist } from './Spotify'
+import Box from './Box'
+import { duration } from './SearchResult'
 
 export const separator = 'playlist:'
+
 class Spotify extends Component {
 
 	constructor(props) {
@@ -30,7 +33,6 @@ class Spotify extends Component {
 	getPlaylist(id) {
 		ipcRenderer.send('Spotify', { action: 'get:playlist', payload: { link: this.getPlaylistLink() } })
 		ipcRenderer.once('Spotify', (event, arg) => {
-			console.log(arg)
 			this.setState(arg)
 			this.getTracks()
 		})
@@ -46,16 +48,40 @@ class Spotify extends Component {
 	render() {
 		return (
 			<div id="playlist" className="section no-padding-top">
+				<Box {...{
+					img: getImageFromPlaylist(this.state),
+					top: this.state.name,
+					topright: (<span className="tag is-info is-capitalized">Playlist</span>),
+					left: (<i className="icon ion-music-note" aria-hidden="true" />),
+					right: (<span className="has-text-weight-semibold">{this.state.tracks.total}</span>),
+				}} />
 				<div className="box">
-					<figure className="image is-128x128">
-						<img src={getImageFromPlaylist(this.state)} />
-					</figure>
-					<span className="is-size-2">{this.state.name}</span>
-					<ul className="songs">
-						{this.state.tracks.items.map((track, i) => (
-							<li key={i + track.track.uri}>{track.track.name}</li>
-						))}
-					</ul>
+					<table className="songs table">
+						<thead>
+							<tr>
+								<th className="is-hidden-mobile"><i className="icon ion-ios-photos" aria-hidden="true" /></th>
+								<th><i className="icon ion-ios-clock" aria-hidden="true" /></th>
+								<th><abbr title="Song">Song</abbr></th>
+								<th><abbr title="Song">Artist</abbr></th>
+								<th className="is-hidden-touch"><abbr title="Song">Album</abbr></th>
+							</tr>
+						</thead>
+						<tbody>
+							{this.state.tracks.items.map((track, i) => (
+								<tr key={i + track.track.uri} className="song">
+									<td className="is-hidden-mobile">
+										<figure className="image is-64x64">
+											<img src={getImageFromPlaylist(track.track.album)} />
+										</figure>
+									</td>
+									<td>{duration(parseInt(track.track.duration_ms) / 1000)}</td>
+									<td>{track.track.name}</td>
+									<td>{track.track.artists.map(item => item.name).join(', ')}</td>
+									<td className="is-hidden-touch">{track.track.album.name}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
 			</div>
 		)
