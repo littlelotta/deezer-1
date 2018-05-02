@@ -9,10 +9,10 @@ export default class extends Component {
 			<a className="custbox box flex has-background-white">
 				<div className="shrink">
 					<p className="image is-96x96 is-hidden-desktop">
-						<img src={`https://e-cdns-images.dzcdn.net/images/cover/${img}/500x500.jpg`} />
+						<img src={img} />
 					</p>
 					<p className="image is-128x128 is-hidden-touch">
-						<img src={`https://e-cdns-images.dzcdn.net/images/cover/${img}/500x500.jpg`} />
+						<img src={img} />
 					</p>
 				</div>
 				<div className="info grow flex">

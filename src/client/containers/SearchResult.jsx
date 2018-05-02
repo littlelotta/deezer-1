@@ -22,7 +22,7 @@ export default class extends Component {
 		const { __TYPE__, SNG_TITLE, ART_NAME, ALB_TITLE, ALB_ID, ALB_PICTURE, DURATION, FILESIZE_MP3_320, FILESIZE_FLAC, SNG_ID } = this.props
 
 		const cur = {
-			img: ALB_PICTURE
+			img: `https://e-cdns-images.dzcdn.net/images/cover/${ALB_PICTURE}/500x500.jpg`
 		}
 		switch (__TYPE__) {
 			case 'album':
