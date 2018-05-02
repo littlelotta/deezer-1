@@ -4,6 +4,13 @@ import { ipcRenderer } from 'electron'
 
 import { updateTab } from '../actions/Tab'
 
+export function getImageFromPlaylist(playlist) {
+	try {
+		return playlist.images[0]['url']
+	} catch (e) {
+		return ''
+	}
+}
 class Spotify extends Component {
 
 	constructor(props) {
@@ -15,6 +22,9 @@ class Spotify extends Component {
 		}
 
 		this.login = this.login.bind(this)
+	}
+
+	componentDidMount() {
 		this.login()
 	}
 
@@ -33,42 +43,31 @@ class Spotify extends Component {
 		})
 	}
 
-	getImage(playlist) {
-		try {
-			return playlist.images[0]['url']
-		} catch (e) {
-			return ''
-		}
-	}
-
 	render() {
-		if (this.props.activeTab !== 'spotify') return (null)
-		else {
-			if (!this.state.loggedIn) return (
-				<div className="box is-radiusless has-background-light has-text-centered">
-					<button className="button" onClick={this.login}>Login to Spotify</button>
-				</div>
-			)
-			else return (<div className="section">
-				{this.state.playlists.map(playlist => (
-					<a key={playlist.id} className="box" onClick={() => this.props.switchTab(`playlist:${playlist.id}`)}>
-						<article className="media">
-							<div className="media-left">
-								<figure className="image is-32x32">
-									<img src={this.getImage(playlist)} alt="Image" />
-								</figure>
-							</div>
-							<div className="media-content">
-								<span className="is-size-5">{playlist.name}</span>
-							</div>
-							<div className="media-right">
-								<span className="has-text-weight-semibold">{playlist.tracks.total} <i className="icon ion-music-note" aria-hidden="true" /></span>
-							</div>
-						</article>
-					</a>
-				))}
-			</div>)
-		}
+		if (!this.state.loggedIn) return (
+			<div className="box is-radiusless has-background-light has-text-centered">
+				<button className="button" onClick={this.login}>Login to Spotify</button>
+			</div>
+		)
+		else return (<div className="section no-padding-top">
+			{this.state.playlists.map(playlist => (
+				<a key={playlist.id} className="box" onClick={() => this.props.switchTab(`playlist:${playlist.href}`)}>
+					<article className="media">
+						<div className="media-left">
+							<figure className="image is-32x32">
+								<img src={getImageFromPlaylist(playlist)} alt="Image" />
+							</figure>
+						</div>
+						<div className="media-content">
+							<span className="is-size-5">{playlist.name}</span>
+						</div>
+						<div className="media-right">
+							<span className="has-text-weight-semibold">{playlist.tracks.total} <i className="icon ion-music-note" aria-hidden="true" /></span>
+						</div>
+					</article>
+				</a>
+			))}
+		</div>)
 	}
 }
 

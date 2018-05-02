@@ -23,6 +23,9 @@ class SearchTab extends Component {
 		this.removeFilters = this.removeFilters.bind(this)
 	}
 
+	componentDidMount() {
+	}
+
 	toggleFilter(filter) {
 		const cur = this.state.filters[filter]
 		this.setState({
@@ -76,9 +79,8 @@ class SearchTab extends Component {
 	}
 
 	render() {
-		if (this.props.activeTab !== 'search') return (null)
-		else return (
-			<div className="section" id="search">
+		return (
+			<div className="section no-padding-top" id="search">
 				<div className="field">
 					<div className={`control ${this.state.isLoading ? 'is-loading' : ''}`}>
 						<input className="input" type="text" placeholder="Search..." onChange={this.search} />
