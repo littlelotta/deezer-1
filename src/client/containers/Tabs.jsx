@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 
-import Search from './SearchTab'
 import Switch from './TabSwitch'
+import Search from './SearchTab'
+import Spotify from './Spotify'
+import SpotifyPlaylist from './SpotifyPlaylist'
 
 export default class extends Component {
 
@@ -25,9 +27,10 @@ export default class extends Component {
 					<div className="column is-hidden-mobile" />
 					<div className="column is-12-mobile is-10-tablet is-9-desktop is-8-widescreen is-7-fullhd">
 						<Switch />
-						<div id="switchBody">
-							<Search />
-						</div>
+
+						<Search />
+						<Spotify />
+						<SpotifyPlaylist />
 					</div>
 					<div className="column is-hidden-mobile" />
 				</div>

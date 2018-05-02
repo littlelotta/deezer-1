@@ -34,7 +34,7 @@ export default class extends Component {
 				cur.top = SNG_TITLE
 				cur.left = ART_NAME
 				cur.right = ALB_TITLE
-				cur.topright = this.duration(DURATION)
+				cur.topright = (<span><span className="has-text-weight-semibold">{this.duration(DURATION)}</span> <span className="tag"><i className="icon ion-ios-information-outline" />{__TYPE__}</span></span>)
 				break
 		}
 
@@ -51,7 +51,7 @@ export default class extends Component {
 				<div className="info grow flex">
 					<div className="grow">
 						<span className="title is-size-4-desktop is-size-5-touch">{cur.top}</span>
-						<span className="is-pulled-right">{cur.topright} <span className="tag"><i className="icon ion-ios-information-outline" />{__TYPE__}</span></span>
+						<span className="is-pulled-right">{cur.topright}</span>
 						<br />
 						<div className="secondRow">
 							<span className="subtitle is-size-5-desktop is-size-6-touch has-text-info">{cur.left}</span>

@@ -3,7 +3,7 @@ import {
 } from '../actions/Tab'
 
 const initialState = {
-	active: 'search'
+	active: 'spotify'
 }
 
 export default (state = initialState, {

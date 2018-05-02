@@ -54,14 +54,25 @@ class SearchTab extends Component {
 				isLoading: true,
 				lastSearch: this.state.input
 			}).then(_ => {
-				ipcRenderer.send('API', { action: 'search', payload: this.state.lastSearch })
-				ipcRenderer.once('API', (event, arg) => {
+				ipcRenderer.send('Deezer', { action: 'search', payload: this.state.lastSearch })
+				ipcRenderer.once('Deezer', (event, arg) => {
 					this.setStateAsync({ isLoading: false, results: arg }).then(_ => {
 						if (this.state.lastSearch !== this.state.input) this.search(false)
 					})
 				})
 			})
 		})
+	}
+
+	getId(item) {
+		switch (item.__TYPE__) {
+			case 'album':
+				return item.ALB_ID + Buffer.from(item.ALB_TITLE).toString('base64')
+			case 'song':
+				return item.SNG_ID + Buffer.from(item.SNG_TITLE).toString('base64')
+			default:
+				return Math.random().toString(36).replace(/[^A-z]+/g, '')
+		}
 	}
 
 	render() {
@@ -77,11 +88,10 @@ class SearchTab extends Component {
 					<a className="button is-small" onClick={this.removeFilters}>Reset filters</a>
 					{Object.keys(this.state.filters).map((filter, i) => <a key={i} className={`button is-small is-capitalized ${this.state.filters[filter] ? 'is-success' : 'is-danger'}`} onClick={() => this.toggleFilter(filter)}>{filter}</a>)}
 				</div>
-				<hr className="has-background-info" />
 				<div className="results">
 					{this.state.results.filter((item) => {
 						return this.state.filters[item.__TYPE__]
-					}).map((result, i) => <SearchResult {...result} key={i} />)}
+					}).map((result) => <SearchResult {...result} key={getId(result)} />)}
 				</div>
 			</div>
 		)
