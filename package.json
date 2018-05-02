@@ -28,11 +28,11 @@
     "request": "^2"
   },
   "scripts": {
-    "pack:native": "electron-builder",
-    "pack:mac": "electron-builder --mac",
-    "pack:win": "electron-builder --win",
-    "pack:linux": "electron-builder --linux",
-    "pack:all": "electron-builder -mwl",
+    "pack:native": "npm run build:prod && electron-builder",
+    "pack:mac": "npm run build:prod && electron-builder --mac",
+    "pack:win": "npm run build:prod && electron-builder --win",
+    "pack:linux": "npm run build:prod && electron-builder --linux",
+    "pack:all": "npm run build:prod && electron-builder -mwl",
     "watch": "tsc --watch & webpack -d -w",
     "build:dev": "tsc && webpack -d",
     "build:prod": "tsc && webpack -p",
