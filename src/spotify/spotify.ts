@@ -106,6 +106,16 @@ export class Auth {
 	}
 }
 
+type Iterable = {
+	items: any[]
+	href: string,
+	next: string | null,
+	previous: string | null,
+	total: number,
+	offset: number,
+	limit: number,
+}
+
 export class API {
 
 	constructor(public auth: Auth) { }
@@ -126,11 +136,20 @@ export class API {
 		})
 	}
 
+	public getLink(href: string): Promise<any> {
+		return this.mkCall({ url: href })
+	}
+
 	public getOwnProfile(): Promise<any> {
 		return this.mkCall({ url: 'https://api.spotify.com/v1/me' })
 	}
 
 	public getOwnPlaylists(): Promise<any> {
 		return this.mkCall({ url: 'https://api.spotify.com/v1/me/playlists?limit=50' })
+	}
+
+	public async getIterable(it: Iterable): Promise<any[]> {
+		if (it.next === null) return it.items
+		return it.items.concat(await this.getIterable(await this.getLink(it.next)))
 	}
 }
