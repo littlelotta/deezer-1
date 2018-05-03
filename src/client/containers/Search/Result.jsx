@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { fmt } from 'human-duration'
 
-import DownloadButton from './DownloadButton'
-import Box from './Box'
+import DownloadButton from '../DownloadButton'
+import Box from '../Box'
 
 
 export function duration(length) {

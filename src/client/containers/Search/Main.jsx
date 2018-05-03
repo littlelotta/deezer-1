@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ipcRenderer } from 'electron'
 
-import SearchResult from './SearchResult'
+import Result from './Result'
 
 class SearchTab extends Component {
 
@@ -94,7 +94,7 @@ class SearchTab extends Component {
 				<div className="results">
 					{this.state.results.filter((item) => {
 						return this.state.filters[item.__TYPE__]
-					}).map(result => <SearchResult {...result} key={this.getId(result)} />)}
+					}).map(result => <Result {...result} key={this.getId(result)} />)}
 				</div>
 			</div>
 		)

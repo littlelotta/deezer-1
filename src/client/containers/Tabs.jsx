@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Switch from './TabSwitch'
-import Search from './SearchTab'
-import Spotify from './Spotify'
-import SpotifyPlaylist, { separator } from './SpotifyPlaylist'
+import Search from './Search/Main'
+import Spotify from './Spotify/Main'
+import Playlist, { separator } from './Spotify/Playlist'
 
 class Tabs extends Component {
 
@@ -31,7 +31,7 @@ class Tabs extends Component {
 
 						{this.props.activeTab === 'spotify' && <Spotify />}
 						{this.props.activeTab === 'search' && <Search />}
-						{this.props.activeTab.startsWith(separator) && <SpotifyPlaylist />}
+						{this.props.activeTab.startsWith(separator) && <Playlist />}
 					</div>
 					<div className="column is-hidden-mobile" />
 				</div>

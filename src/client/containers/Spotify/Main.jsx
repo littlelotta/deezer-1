@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ipcRenderer } from 'electron'
 
-import { updateTab } from '../actions/Tab'
-import Box from './Box'
+import { updateTab } from '../../actions/Tab'
+import Box from '../Box'
 
 export function getImageFromPlaylist(playlist) {
 	try {

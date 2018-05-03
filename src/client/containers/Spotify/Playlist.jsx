@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ipcRenderer } from 'electron'
 
-import Box from './Box'
-import DownloadButton from './DownloadButton'
-import { getImageFromPlaylist } from './Spotify'
-import { duration } from './SearchResult'
+import Box from '../Box'
+import DownloadButton from '../DownloadButton'
+import { getImageFromPlaylist } from '../Spotify/Main'
+import { duration } from '../Search/Result'
 
 export const separator = 'playlist:'
 
