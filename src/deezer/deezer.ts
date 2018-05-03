@@ -88,12 +88,29 @@ export default class DZApi {
 		})
 	}
 
-	public search(q: string): Promise<any[]> {
+	public getDeezerEquivalent(q: any, type: string = 'TRACK'): Promise<any> {
+		return new Promise((resolve, reject) => {
+			request({
+				url: `https://www.deezer.com/ajax/gw-light.php?method=deezer.suggest&input=3&api_version=1.0&api_token=${this.auth.token}`,
+				method: 'POST',
+				json: {
+					'QUERY': q,
+					'TYPES': { [type]: true },
+					'NB': 1
+				}
+			}, (err, res, body) => {
+				if (Object.keys(body.results[type]).length === 0) reject('Could not find track')
+				resolve(body.results[type][0])
+			})
+		})
+	}
+
+	public search(q: string, limit: number = 25): Promise<any[]> {
 		const categories = ['ALBUM', 'TRACK']
 		const query: { 'QUERY': string, 'TYPES': { [prop: string]: boolean }, 'NB': number } = {
 			'QUERY': q,
 			'TYPES': {},
-			'NB': 25
+			'NB': limit
 		}
 		for (const cat of categories) query['TYPES'][cat] = true
 
@@ -114,11 +131,12 @@ export default class DZApi {
 	}
 
 	public dlTrack(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<boolean> {
-		return new Promise(res => {
+		return new Promise((res, rej) => {
 			const compute = fork(__dirname + '/crypt.js')
 			this.getJSON('Track', id).then(json => compute.send({ json: json.DATA, fmt, path }))
 			compute.on('message', (success: boolean) => {
-				res(success)
+				if (success) res()
+				else rej()
 			})
 		})
 	}
