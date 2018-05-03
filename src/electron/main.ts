@@ -97,8 +97,8 @@ app.on('ready', async () => {
 		y: pos[1],
 		width: dim[0],
 		height: dim[1],
-		minWidth: 350,
-		minHeight: 500,
+		minWidth: 550,
+		minHeight: 650,
 		frame: false,
 	})
 
