@@ -96,7 +96,7 @@ class DZCrypt {
 		})
 	}
 
-	public static async downloadTrack(track: any, fmt: FILE_TYPES, dir: string) {
+	public static async downloadTrack(track: any, fmt: FILE_TYPES, dir: string): Promise<boolean> {
 		const url = 'https://e-cdns-proxy-' + track.MD5_ORIGIN.charAt(0) + '.dzcdn.net' + '/mobile/1/' + this.encryptURL(track, fmt)
 		const key = this.bfGenKey(track.SNG_ID)
 
