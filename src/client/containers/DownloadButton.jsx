@@ -34,20 +34,20 @@ export default class extends Component {
 	}
 
 	render() {
-		const { type, id, fmt, size } = this.props
+		const { type, id, fmt, size, withLeft = true } = this.props
 
 		return (
 			<div className="control">
 				<div className="tags has-addons dl-btn" onClick={() => this.dl(id, fmt, type)}>
-					<span className="tag">
+					{withLeft && <span className="tag left">
 						{this.state.state === 1 ?
 							(<span>Downloading...</span>) :
 							(<span>
 								{this.mkSize(size)}
 								<i className="icon ion-arrow-down-c" />
 							</span>)}
-					</span>
-					<span className="tag is-dark is-uppercase">{fmt} <i className="icon ion-stats-bars is-hidden-mobile" /></span>
+					</span>}
+					<span className={`tag right is-uppercase ${withLeft ? ' is-dark' : ''}`}>{fmt} <i className="icon ion-stats-bars is-hidden-mobile" /></span>
 				</div>
 			</div>
 		)

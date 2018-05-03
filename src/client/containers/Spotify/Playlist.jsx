@@ -56,8 +56,8 @@ class Spotify extends Component {
 					left: (<i className="icon ion-music-note" aria-hidden="true" />),
 					right: (<span className="has-text-weight-semibold">{this.state.tracks.total}</span>),
 					bottom: (<div className="shrink field is-grouped  dl-tags">
-						<DownloadButton {...{ type: 'playlist', id: this.href, fmt: 'mp3' }} />
-						<DownloadButton {...{ type: 'playlist', id: this.href, fmt: 'flac' }} />
+						<DownloadButton {...{ type: 's:playlist', id: this.href, fmt: 'mp3' }} />
+						<DownloadButton {...{ type: 's:playlist', id: this.href, fmt: 'flac' }} />
 					</div>)
 				}} />
 				<div className="box">
@@ -66,25 +66,34 @@ class Spotify extends Component {
 							<tr>
 								<th className="is-hidden-mobile"><i className="icon ion-ios-photos" aria-hidden="true" /></th>
 								<th><i className="icon ion-ios-clock" aria-hidden="true" /></th>
+								{/* <th><i className="icon ion-arrow-down-c" aria-hidden="true" /></th> */}
 								<th><abbr title="Song">Song</abbr></th>
 								<th><abbr title="Song">Artist</abbr></th>
 								<th className="is-hidden-touch"><abbr title="Song">Album</abbr></th>
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.tracks.items.map((track, i) => (
-								<tr key={i + track.track.uri} className="song">
-									<td className="is-hidden-mobile">
-										<figure className="image is-64x64">
-											<img src={getImageFromPlaylist(track.track.album)} />
-										</figure>
-									</td>
-									<td>{duration(parseInt(track.track.duration_ms) / 1000)}</td>
-									<td>{track.track.name}</td>
-									<td>{track.track.artists.map(item => item.name).join(', ')}</td>
-									<td className="is-hidden-touch">{track.track.album.name}</td>
-								</tr>
-							))}
+							{this.state.tracks.items.map((track, i) => {
+								const q = [track.track.name, track.track.album.name, track.track.artists.map(item => item.name).join(' ')]
+								return (
+									<tr key={i + track.track.uri} className="song">
+										<td className="is-hidden-mobile">
+											<figure className="image is-64x64">
+												<img src={getImageFromPlaylist(track.track.album)} />
+											</figure>
+										</td>
+										<td>{duration(parseInt(track.track.duration_ms) / 1000)}</td>
+										<td>{track.track.name}
+											<div className="dl-tags field is-grouped">
+												<DownloadButton {...{ type: 's:track', id: q, fmt: 'mp3' }} />
+												<DownloadButton {...{ type: 's:track', id: q, fmt: 'flac' }} />
+											</div>
+										</td>
+										<td>{track.track.artists.map(item => item.name).join(', ')}</td>
+										<td className="is-hidden-touch">{track.track.album.name}</td>
+									</tr>
+								)
+							})}
 						</tbody>
 					</table>
 				</div>

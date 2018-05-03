@@ -30,6 +30,17 @@ body {
     -webkit-app-region: drag
 }
 
+.dl-tags {
+    overflow-x: auto;
+    overflow-y: hidden;
+    .dl-btn {
+        cursor: pointer;
+        &:hover {
+            opacity: .9;
+        }
+    }
+}
+
 .custbox {
     padding: 0;
     .info {
@@ -41,23 +52,16 @@ body {
         text-overflow: ellipsis;
         overflow: hidden;
     }
-    .dl-tags {
-        overflow-x: auto;
-        overflow-y: hidden;
-        .dl-btn {
-            cursor: pointer;
-            &:hover {
-                opacity: .9;
-            }
-        }
-    }
 }
 
 #playlist {
     .songs {
         .song {
-            // padding: .5em;
-            // border-bottom: 1px solid #ededed
+            .dl-tags {
+                .tag {
+                    font-size: .55em;
+                }
+            }
         }
     }
 }
