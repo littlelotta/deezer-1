@@ -6,7 +6,7 @@ type Setting = { [setting: string]: string }
 
 export default class Settings {
 
-	private static getFileName(): string {
+	public static getFileName(): string {
 		return join(app.getPath('userData'), 'settings.json')
 	}
 
