@@ -18,7 +18,7 @@ export default class extends Component {
 		this.setState({ state: 1 })
 		ipcRenderer.send('Deezer', { action: `dl:${type}`, payload: { id, fmt } })
 		const listenter = (event, arg) => {
-			if (arg !== false && arg != id) return
+			if (arg !== false && JSON.stringify(arg) != JSON.stringify(id)) return
 			ipcRenderer.removeListener('Deezer', listenter)
 			this.setState({ state: 0 })
 			if (arg === false)
@@ -34,20 +34,20 @@ export default class extends Component {
 	}
 
 	render() {
-		const { type, id, fmt, size, withLeft = true } = this.props
+		const { type, id, fmt, size } = this.props
 
 		return (
 			<div className="control">
 				<div className="tags has-addons dl-btn" onClick={() => this.dl(id, fmt, type)}>
-					{withLeft && <span className="tag left">
+					<span className="tag left">
 						{this.state.state === 1 ?
 							(<span>Downloading...</span>) :
 							(<span>
 								{this.mkSize(size)}
 								<i className="icon ion-arrow-down-c" />
 							</span>)}
-					</span>}
-					<span className={`tag right is-uppercase ${withLeft ? ' is-dark' : ''}`}>{fmt} <i className="icon ion-stats-bars is-hidden-mobile" /></span>
+					</span>
+					<span className="tag right is-uppercase is-dark">{fmt} <i className="icon ion-stats-bars is-hidden-mobile" /></span>
 				</div>
 			</div>
 		)
