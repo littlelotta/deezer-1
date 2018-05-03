@@ -57,7 +57,7 @@ export class Auth {
 				auth.renew().then(() => resolve(auth))
 			} else {
 
-				const server = app.listen(parseInt(config.spotify.redirect_uri.replace(/[^\d]/g, '')))
+				const server = app.listen(parseInt(config.spotify.redirect_uri.replace(/[^\d]/g, '')), '127.0.0.1')
 				app.get('/callback', async (req, res) => {
 					const auth = await this.getTokenFromCode(req.query.code)
 					res.send(`<!DOCTYPE html><html><head></head><body><script>window.close();</script></body></html>`)
