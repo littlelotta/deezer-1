@@ -32,7 +32,7 @@ type IpcEvent = {
 	}
 }
 ipcMain.on('Deezer', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
-	let ret = undefined
+	let ret: any = false
 	switch (action) {
 
 		case 'search':
@@ -58,6 +58,17 @@ ipcMain.on('Deezer', async (event: IpcEvent, { action, payload }: { action: stri
 				ret = false
 			}
 			break
+		case 'dl:s:playlist':
+			ret = true
+			break
+		case 'dl:s:track':
+			try {
+				const equiv = await api.getDeezerEquivalent(payload.id.join(' '), 'TRACK')
+				if (await api.dlTrack(equiv.SNG_ID, getFileType(payload.fmt), Settings.get('dlDir')) === true) ret = payload.id
+				else throw new Error()
+			} catch (e) {
+				ret = false
+			}
 	}
 	event.sender.send('Deezer', ret)
 })
