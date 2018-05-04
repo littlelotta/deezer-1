@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { remote } from 'electron'
+import { remote, shell } from 'electron'
 
 import Switch from './TabSwitch'
 import Search from './Search/Main'
@@ -25,13 +25,19 @@ class Tabs extends Component {
 										<h2 className="subtitle">MP3 &amp; Flac</h2>
 									</div>
 									<div className="grow" />
-									<div className="shrink">
-										<a className="icon is-medium" onClick={() => this.props.switchTab('settings')}>
-											<i className="ion ion-ios-cog" />
-										</a>
-										<a className="icon is-medium" onClick={() => remote.getCurrentWindow().close()}>
-											<i className="ion ion-ios-close" />
-										</a>
+									<div className="shrink" id="icons">
+										<span className="flex center cliccable" onClick={() => shell.openExternal('https://github.com/CupCakeArmy/deezer')}>
+											Github
+											<a className="icon is-medium" ><i className="ion ion-ios-information" /></a>
+										</span>
+										<span className="flex center cliccable" onClick={() => this.props.switchTab('settings')}>
+											Settings
+											<a className="icon is-medium cliccable"><i className="ion ion-ios-cog" /></a>
+										</span>
+										<span className="flex center cliccable" onClick={() => remote.getCurrentWindow().close()}>
+											Close
+											<a className="icon is-medium"><i className="ion ion-ios-close" /></a>
+										</span>
 									</div>
 								</nav>
 							</div>
