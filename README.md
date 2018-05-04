@@ -20,3 +20,7 @@ mv config.sample.json config.json
 # Build the app
 npm run pack:all
 ```
+
+### Screen
+
+![Screenshot](https://i.imgur.com/lsPazqj.png)
