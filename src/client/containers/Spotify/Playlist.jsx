@@ -49,8 +49,8 @@ class Spotify extends Component {
 					left: (<i className="icon ion-music-note" aria-hidden="true" />),
 					right: (<span className="has-text-weight-semibold">{this.state.tracks.total}</span>),
 					bottom: (<div className="shrink field is-grouped  dl-tags">
-						<DownloadButton {...{ type: 's:playlist', id: this.href, fmt: 'mp3' }} />
-						<DownloadButton {...{ type: 's:playlist', id: this.href, fmt: 'flac' }} />
+						{/* <DownloadButton {...{ type: 's:playlist', id: this.href, fmt: 'mp3' }} /> */}
+						{/* <DownloadButton {...{ type: 's:playlist', id: this.href, fmt: 'flac' }} /> */}
 					</div>)
 				}} />
 				<div className="box">
