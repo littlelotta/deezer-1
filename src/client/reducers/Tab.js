@@ -3,7 +3,7 @@ import {
 } from '../actions/Tab'
 
 const initialState = {
-	active: 'settings'
+	active: 'search'
 }
 
 export default (state = initialState, {
