@@ -1,6 +1,6 @@
 {
   "name": "deezer",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Deezer Downloader",
   "repository": {
     "type": "git",
@@ -14,6 +14,17 @@
   },
   "homepage": "https://github.com/CupCakeArmy/deezer#readme",
   "main": "./dist/electron/main.js",
+  "scripts": {
+    "pack:native": "npm run build:prod && electron-builder",
+    "pack:mac": "npm run build:prod && electron-builder --mac",
+    "pack:win": "npm run build:prod && electron-builder --win",
+    "pack:linux": "npm run build:prod && electron-builder --linux",
+    "pack:all": "npm run build:prod && electron-builder -mwl",
+    "watch": "tsc --watch & webpack -d -w",
+    "build:dev": "tsc && webpack -d",
+    "build:prod": "tsc && webpack -p",
+    "start": "electron ."
+  },
   "dependencies": {
     "express": "^4",
     "human-duration": "^1",
@@ -26,17 +37,6 @@
     "react-redux": "^5",
     "redux": "^4",
     "request": "^2"
-  },
-  "scripts": {
-    "pack:native": "npm run build:prod && electron-builder",
-    "pack:mac": "npm run build:prod && electron-builder --mac",
-    "pack:win": "npm run build:prod && electron-builder --win",
-    "pack:linux": "npm run build:prod && electron-builder --linux",
-    "pack:all": "npm run build:prod && electron-builder -mwl",
-    "watch": "tsc --watch & webpack -d -w",
-    "build:dev": "tsc && webpack -d",
-    "build:prod": "tsc && webpack -p",
-    "start": "electron ."
   },
   "devDependencies": {
     "ajv": "^6",
