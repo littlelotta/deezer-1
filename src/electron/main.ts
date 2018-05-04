@@ -108,6 +108,10 @@ ipcMain.on('Settings', async (event: IpcEvent, { action, payload }: { action: st
 		case 'set:dlFolder':
 			ret = setNewDlFolder()
 			break
+		case 'do:quit':
+			app.quit()
+			ret = true
+			break
 		case 'do:reset':
 			ret = resetApp()
 			break

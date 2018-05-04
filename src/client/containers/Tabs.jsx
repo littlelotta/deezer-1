@@ -8,6 +8,7 @@ import Spotify from './Spotify/Main'
 import Settings from './Settings/Main'
 import Playlist, { separator } from './Spotify/Playlist'
 import { updateTab } from '../actions/Tab'
+import { send } from '../index'
 
 class Tabs extends Component {
 
@@ -34,7 +35,7 @@ class Tabs extends Component {
 											Settings
 											<a className="icon is-medium cliccable"><i className="ion ion-ios-cog" /></a>
 										</span>
-										<span className="flex center cliccable" onClick={() => remote.getCurrentWindow().close()}>
+										<span className="flex center cliccable" onClick={() => send('Settings', 'do:quit')}>
 											Close
 											<a className="icon is-medium"><i className="ion ion-ios-close" /></a>
 										</span>
