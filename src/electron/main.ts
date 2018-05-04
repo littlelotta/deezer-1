@@ -128,7 +128,7 @@ app.on('ready', async () => {
 	if (Settings.get('spotifyActivated') === undefined) Settings.set('spotifyActivated', false)
 
 	const pos = Settings.get('pos', [50, 50])
-	const dim = Settings.get('dim', [800, 1200])
+	const dim = Settings.get('dim', [1200, 800])
 	const win = new BrowserWindow({
 		x: pos[0],
 		y: pos[1],
