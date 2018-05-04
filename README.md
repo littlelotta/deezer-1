@@ -10,6 +10,10 @@ This is a proof of concept and I, the author, do not take responsibility for any
 
 ## Quickstart 💥
 
+[Download](https://github.com/CupCakeArmy/deezer/releases). Run.
+
+## Build 🔨
+
 ```
 # Install dependencies
 npm i
