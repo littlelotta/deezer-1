@@ -26,11 +26,24 @@ body {
     padding-top: 0;
 }
 
+.cliccable {
+    transition: all .25s ease;
+    &:hover {
+        transform: scale(.9);
+    }
+}
+
 #header {
     -webkit-app-region: drag;
-    .icon {
-        &.is-medium {
-            font-size: 2em;
+    #icons {
+        .flex {
+            justify-content: flex-end;
+            cursor: pointer;
+        }
+        .icon {
+            &.is-medium {
+                font-size: 2em;
+            }
         }
     }
 }
