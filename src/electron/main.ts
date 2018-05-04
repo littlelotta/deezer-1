@@ -148,7 +148,7 @@ app.on('ready', async () => {
 		Settings.set('pos', win.getPosition())
 	})
 
-	win.webContents.openDevTools()
+	// win.webContents.openDevTools()
 
 	try {
 		api = await DZApi.newAsync()
