@@ -18,7 +18,7 @@ export default class Settings {
 		this.writeOverwrite(Object.assign(this.read(), obj))
 	}
 
-	private static read() {
+	public static read() {
 		try {
 			return JSON.parse(readFileSync(this.getFileName()).toString())
 		} catch (e) {

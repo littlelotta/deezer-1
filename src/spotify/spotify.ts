@@ -6,6 +6,15 @@ import { stringify } from 'querystring'
 
 import Settings from '../electron/Settings'
 
+type Iterable = {
+	items: any[]
+	href: string,
+	next: string | null,
+	previous: string | null,
+	total: number,
+	offset: number,
+	limit: number,
+}
 
 const config = require(__dirname + '/../../config.json')
 
@@ -106,16 +115,6 @@ export class Auth {
 	}
 }
 
-type Iterable = {
-	items: any[]
-	href: string,
-	next: string | null,
-	previous: string | null,
-	total: number,
-	offset: number,
-	limit: number,
-}
-
 export class API {
 
 	constructor(public auth: Auth) { }
@@ -131,6 +130,7 @@ export class API {
 				json: true
 			}, options), function (error: any, response: any, body: any) {
 				if (error) rej()
+				Settings.set('spotifyActivated', true)
 				res(body)
 			})
 		})

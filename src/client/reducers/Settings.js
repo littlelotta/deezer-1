@@ -1,9 +1,9 @@
 import {
-	Tab
-} from '../actions/Tab'
+	Settings
+} from '../actions/Settings'
 
 const initialState = {
-	active: 'settings'
+	dlDir: '/Downloads',
 }
 
 export default (state = initialState, {
@@ -12,10 +12,10 @@ export default (state = initialState, {
 }) => {
 	switch (type) {
 
-		case Tab.Switch:
+		case Settings.Update:
 			return {
 				...state,
-				active: payload
+				...payload
 			}
 
 		default:

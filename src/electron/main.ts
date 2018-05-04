@@ -7,6 +7,7 @@ import {
 import * as path from 'path'
 import * as url from 'url'
 
+import { setNewDlFolder, resetApp } from './util'
 import DLF from './dlFolder'
 import Settings from './Settings'
 import DZApi, { FILE_TYPES } from '../deezer/deezer'
@@ -44,8 +45,8 @@ ipcMain.on('Deezer', async (event: IpcEvent, { action, payload }: { action: stri
 			break
 		case 'dl:song':
 			try {
-				if (await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir')) === true) ret = payload.id
-				else throw new Error()
+				await api.dlTrack(payload.id, getFileType(payload.fmt), Settings.get('dlDir'))
+				ret = payload.id
 			} catch (e) {
 				ret = false
 			}
@@ -59,13 +60,13 @@ ipcMain.on('Deezer', async (event: IpcEvent, { action, payload }: { action: stri
 			}
 			break
 		case 'dl:s:playlist':
-			ret = true
+			ret = payload.id
 			break
 		case 'dl:s:track':
 			try {
 				const equiv = await api.getDeezerEquivalent(payload.id.join(' '), 'TRACK')
-				if (await api.dlTrack(equiv.SNG_ID, getFileType(payload.fmt), Settings.get('dlDir')) === true) ret = payload.id
-				else throw new Error()
+				await api.dlTrack(equiv.SNG_ID, getFileType(payload.fmt), Settings.get('dlDir'))
+				ret = payload.id
 			} catch (e) {
 				ret = false
 			}
@@ -74,14 +75,17 @@ ipcMain.on('Deezer', async (event: IpcEvent, { action, payload }: { action: stri
 })
 
 ipcMain.on('Spotify', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
-	let ret = undefined
+	let ret: any = false
 	switch (action) {
 
-		case 'login':
+		case 'do:login':
 			sapi = new Spotify.API(await Spotify.Auth.login())
 			ret = await sapi.getOwnProfile()
 			break
-
+		case 'do:logout':
+			Settings.set('spotifyActivated', false)
+			ret = true
+			break
 		case 'get:own:playlists':
 			ret = await sapi.getOwnPlaylists()
 			break
@@ -95,11 +99,28 @@ ipcMain.on('Spotify', async (event: IpcEvent, { action, payload }: { action: str
 	event.sender.send('Spotify', ret)
 })
 
+ipcMain.on('Settings', async (event: IpcEvent, { action, payload }: { action: string, payload: any }) => {
+	let ret: any = false
+	switch (action) {
+		case 'get':
+			ret = Settings.read()
+			break
+		case 'set:dlFolder':
+			ret = setNewDlFolder()
+			break
+		case 'do:reset':
+			ret = resetApp()
+			break
+	}
+	event.sender.send('Settings', ret)
+})
+
 app.on('ready', async () => {
 
 	Menu.setApplicationMenu(Menu.buildFromTemplate(require('./Menu')))
 
 	if (Settings.get('dlDir') === undefined) Settings.set('dlDir', DLF())
+	if (Settings.get('spotifyActivated') === undefined) Settings.set('spotifyActivated', false)
 
 	const pos = Settings.get('pos', [50, 50])
 	const dim = Settings.get('dim', [450, 800])

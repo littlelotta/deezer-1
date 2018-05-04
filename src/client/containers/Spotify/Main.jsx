@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ipcRenderer } from 'electron'
 
+import { send } from '../../index'
 import { updateTab } from '../../actions/Tab'
 import Box from '../Box'
 
@@ -18,57 +18,42 @@ class Spotify extends Component {
 		super(props)
 
 		this.state = {
-			loggedIn: false,
 			playlists: [],
 		}
-
-		this.login = this.login.bind(this)
 	}
 
 	componentDidMount() {
-		this.login()
-	}
-
-	login() {
-		ipcRenderer.send('Spotify', { action: 'login', payload: {} })
-		ipcRenderer.once('Spotify', (event, arg) => {
-			this.setState({ loggedIn: true, profile: arg })
-			this.getPlaylists()
-		})
-	}
-
-	getPlaylists() {
-		ipcRenderer.send('Spotify', { action: 'get:own:playlists', payload: {} })
-		ipcRenderer.once('Spotify', (event, arg) => {
-			this.setState({ playlists: arg.items })
-		})
+		if (this.props.spotifyActivated)
+			send('Spotify', 'do:login')
+				.then(_ => send('Spotify', 'get:own:playlists'))
+				.then(arg => this.setState({ playlists: arg.items }))
 	}
 
 	render() {
-		if (!this.state.loggedIn) return (
+		return !this.props.spotifyActivated ?
 			<div className="box is-radiusless has-background-light has-text-centered">
-				<button className="button" onClick={this.login}>Login to Spotify</button>
+				<button className="button" onClick={() => this.props.switchTab('settings')}>Login to Spotify</button>
 			</div>
-		)
-		else return (<div className="section no-padding-top">
-			{this.state.playlists.map(playlist => (
-				<Box {...{
-					onClick: () => this.props.switchTab(`playlist:${playlist.href}`),
-					img: getImageFromPlaylist(playlist),
-					top: playlist.name,
-					topright: (<span className="tag is-info is-capitalized">Playlist</span>),
-					left: (<i className="icon ion-music-note" aria-hidden="true" />),
-					right: (<span className="has-text-weight-semibold">{playlist.tracks.total}</span>),
-				}}
-					key={playlist.id} />
-			))}
-		</div>)
+			:
+			<div className="section no-padding-top">
+				{this.state.playlists.map(playlist => (
+					<Box {...{
+						onClick: () => this.props.switchTab(`playlist:${playlist.href}`),
+						img: getImageFromPlaylist(playlist),
+						top: playlist.name,
+						topright: (<span className="tag is-info is-capitalized">Playlist</span>),
+						left: (<i className="icon ion-music-note" aria-hidden="true" />),
+						right: (<span className="has-text-weight-semibold">{playlist.tracks.total}</span>),
+					}}
+						key={playlist.id} />
+				))}
+			</div>
 	}
 }
 
 export default connect(
 	state => ({
-		activeTab: state.Tab.active
+		spotifyActivated: state.Settings.spotifyActivated,
 	}),
 	dispatcher => ({
 		switchTab: (tab) => dispatcher(updateTab(tab))

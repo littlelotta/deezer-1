@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ipcRenderer } from 'electron'
 
+import { send } from '../../index'
 import Box from '../Box'
 import DownloadButton from '../DownloadButton'
 import { getImageFromPlaylist } from '../Spotify/Main'
@@ -18,7 +18,6 @@ class Spotify extends Component {
 			tracks: { items: [] }
 		}
 
-		this.getPlaylistLink = this.getPlaylistLink.bind(this)
 		this.getPlaylist = this.getPlaylist.bind(this)
 		this.getTracks = this.getTracks.bind(this)
 	}
@@ -27,23 +26,17 @@ class Spotify extends Component {
 		this.getPlaylist()
 	}
 
-	getPlaylistLink() {
-		return this.props.activeTab.slice((separator.length))
-	}
-
 	getPlaylist(id) {
-		ipcRenderer.send('Spotify', { action: 'get:playlist', payload: { link: this.getPlaylistLink() } })
-		ipcRenderer.once('Spotify', (event, arg) => {
-			this.setState(arg)
-			this.getTracks()
-		})
+		send('Spotify', 'get:playlist', { link: this.props.activeTab.slice((separator.length)) })
+			.then(arg => {
+				this.setState(arg)
+				this.getTracks()
+			})
 	}
 
 	getTracks() {
-		ipcRenderer.send('Spotify', { action: 'get:iterable', payload: { iterable: this.state.tracks } })
-		ipcRenderer.once('Spotify', (event, arg) => {
-			this.setState({ tracks: Object.assign(this.state.tracks, { items: arg }) })
-		})
+		send('Spotify', 'get:iterable', { iterable: this.state.tracks })
+			.then(arg => this.setState({ tracks: Object.assign(this.state.tracks, { items: arg }) }))
 	}
 
 	render() {

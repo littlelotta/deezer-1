@@ -1,6 +1,7 @@
 import { app, dialog, shell } from 'electron'
 import Settings from './Settings'
 import { dirname } from 'path'
+import { setNewDlFolder, resetApp } from './util'
 
 module.exports = [{
 	label: 'Deezer Downloader',
@@ -20,20 +21,10 @@ module.exports = [{
 	label: 'Options',
 	submenu: [{
 		label: 'Select download folder',
-		click: () => {
-			const whereToSave = dialog.showOpenDialog({
-				properties: ['openDirectory'],
-				defaultPath: Settings.get('dlDir')
-			})
-			if (whereToSave !== undefined && Array.isArray(whereToSave))
-				Settings.set('dlDir', whereToSave[0])
-		}
+		click: setNewDlFolder
 	}, {
 		label: 'Reset Settings',
-		click: () => {
-			Settings.reset()
-			app.quit()
-		}
+		click: resetApp
 	}, {
 		label: 'Open Settings',
 		click: () => {

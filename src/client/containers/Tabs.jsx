@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { remote } from 'electron'
 
 import Switch from './TabSwitch'
 import Search from './Search/Main'
 import Spotify from './Spotify/Main'
+import Settings from './Settings/Main'
 import Playlist, { separator } from './Spotify/Playlist'
+import { updateTab } from '../actions/Tab'
 
 class Tabs extends Component {
 
@@ -16,8 +19,21 @@ class Tabs extends Component {
 						<div className="columns">
 							<div className="column is-hidden-mobile" />
 							<div className="column is-12-mobile is-10-tablet is-9-desktop is-8-widescreen is-7-fullhd">
-								<h1 className="title">Deezer Ripper</h1>
-								<h2 className="subtitle">HQ Downloader</h2>
+								<nav className="flex center">
+									<div className="shrink">
+										<h1 className="title"><i className="ion ion-disc" /> Deezer Ripper</h1>
+										<h2 className="subtitle">MP3 &amp; Flac</h2>
+									</div>
+									<div className="grow" />
+									<div className="shrink">
+										<a className="icon is-medium" onClick={() => this.props.switchTab('settings')}>
+											<i className="ion ion-ios-cog" />
+										</a>
+										<a className="icon is-medium" onClick={() => remote.getCurrentWindow().close()}>
+											<i className="ion ion-ios-close" />
+										</a>
+									</div>
+								</nav>
 							</div>
 							<div className="column is-hidden-mobile" />
 						</div>
@@ -31,6 +47,7 @@ class Tabs extends Component {
 
 						{this.props.activeTab === 'spotify' && <Spotify />}
 						{this.props.activeTab === 'search' && <Search />}
+						{this.props.activeTab === 'settings' && <Settings />}
 						{this.props.activeTab.startsWith(separator) && <Playlist />}
 					</div>
 					<div className="column is-hidden-mobile" />
@@ -44,4 +61,6 @@ export default connect(
 	state => ({
 		activeTab: state.Tab.active
 	}),
-	dispatcher => ({}))(Tabs)
+	dispatcher => ({
+		switchTab: (tab) => dispatcher(updateTab(tab))
+	}))(Tabs)

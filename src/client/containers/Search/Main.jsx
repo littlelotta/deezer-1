@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ipcRenderer } from 'electron'
 
+import { send } from '../../index'
 import Result from './Result'
 
 class SearchTab extends Component {
@@ -57,12 +57,9 @@ class SearchTab extends Component {
 				isLoading: true,
 				lastSearch: this.state.input
 			}).then(_ => {
-				ipcRenderer.send('Deezer', { action: 'search', payload: this.state.lastSearch })
-				ipcRenderer.once('Deezer', (event, arg) => {
-					this.setStateAsync({ isLoading: false, results: arg }).then(_ => {
-						if (this.state.lastSearch !== this.state.input) this.search(false)
-					})
-				})
+				send('Deezer', 'search', this.state.lastSearch)
+					.then(arg => this.setStateAsync({ isLoading: false, results: arg }))
+					.then(_ => { if (this.state.lastSearch !== this.state.input) this.search(false) })
 			})
 		})
 	}

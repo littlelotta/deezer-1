@@ -130,7 +130,7 @@ export default class DZApi {
 		})
 	}
 
-	public dlTrack(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<boolean> {
+	public dlTrack(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<void> {
 		return new Promise((res, rej) => {
 			const compute = fork(__dirname + '/crypt.js')
 			this.getJSON('Track', id).then(json => compute.send({ json: json.DATA, fmt, path }))
@@ -141,14 +141,14 @@ export default class DZApi {
 		})
 	}
 
-	public dlAlbum(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<boolean> {
-		return new Promise(res => {
+	public dlAlbum(id: number, fmt = FILE_TYPES.MP3_320, path: string): Promise<void> {
+		return new Promise((res, rej) => {
 			this.getJSON('Album', id).then(json => {
 				const newPath = join(path, json.DATA.ALB_TITLE)
-				const allTracks: Promise<boolean>[] = []
+				const allTracks: Promise<void>[] = []
 				for (const track of json.SONGS.data)
 					allTracks.push(this.dlTrack(track.SNG_ID, fmt, newPath))
-				Promise.all(allTracks).then(_ => { res(json) })
+				Promise.all(allTracks).then(_ => res()).catch(_ => rej())
 			})
 		})
 	}
