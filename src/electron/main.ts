@@ -84,6 +84,7 @@ ipcMain.on('Spotify', async (event: IpcEvent, { action, payload }: { action: str
 			break
 		case 'do:logout':
 			Settings.set('spotifyActivated', false)
+			Settings.set('spotifyAuth', undefined)
 			ret = true
 			break
 		case 'get:own:playlists':
