@@ -10,7 +10,7 @@ import * as url from 'url'
 import { setNewDlFolder, resetApp } from './util'
 import DLF from './dlFolder'
 import Settings from './Settings'
-import DZApi, { FILE_TYPES } from '../deezer/deezer'
+import DZApi, { FILE_TYPES, AuthObject } from '../deezer/deezer'
 import * as Spotify from '../spotify/spotify'
 
 let api: DZApi
@@ -156,7 +156,8 @@ app.on('ready', async () => {
 	// win.webContents.openDevTools()
 
 	try {
-		api = await DZApi.newAsync()
+		const auth = await AuthObject.getNewAuth()
+		api = new DZApi(auth)
 		console.log('API: Ready')
 	} catch (e) {
 		console.log('Could not initialize API')

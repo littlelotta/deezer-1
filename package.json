@@ -13,7 +13,6 @@
     "url": "https://github.com/CupCakeArmy/deezer/issues"
   },
   "homepage": "https://github.com/CupCakeArmy/deezer#readme",
-  "main": "./dist/electron/main.js",
   "scripts": {
     "pack:native": "npm run build:prod && electron-builder",
     "pack:mac": "npm run build:prod && electron-builder --mac",
@@ -23,29 +22,27 @@
     "watch": "tsc --watch & webpack -d -w",
     "build:dev": "tsc && webpack -d",
     "build:prod": "tsc && webpack -p",
-    "start": "electron ."
+    "start": "electron ./dist/electron/main.js"
   },
   "dependencies": {
     "express": "^4",
     "human-duration": "^1",
     "human-format": "^0",
     "mkdir-recursive": "^0",
-    "node-id3": "^0",
+    "node-id3": "^0.1.4",
     "querystring": "^0",
     "react": "^16",
     "react-dom": "^16",
     "react-redux": "^5",
     "redux": "^4",
-    "request": "^2"
+    "request": "^2.86.0"
   },
   "devDependencies": {
-    "ajv": "^6",
-    "electron-builder": "^20",
-    "electron": "^1",
     "@types/electron": "^1",
     "@types/express": "^4",
-    "@types/node": "^9",
+    "@types/node": "^9.6.17",
     "@types/request": "^2",
+    "ajv": "^6.5.0",
     "babel-core": "^6",
     "babel-loader": "^7",
     "babel-plugin-transform-class-properties": "^6",
@@ -53,14 +50,16 @@
     "babel-preset-latest": "^6",
     "babel-preset-react": "^6",
     "css-loader": "^0",
+    "electron": "^1.8.7",
+    "electron-builder": "^20.14.3",
     "file-loader": "^1",
     "html-loader": "^0",
     "html-webpack-plugin": "^3",
-    "less": "^3",
+    "less": "^3.0.4",
     "less-loader": "^4",
     "mini-css-extract-plugin": "^0",
     "typescript": "^2",
-    "webpack": "^4",
-    "webpack-cli": "^2"
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3"
   }
 }

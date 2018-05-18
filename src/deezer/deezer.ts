@@ -15,7 +15,7 @@ export enum FILE_TYPES {
 	FLAC = 9,
 }
 
-class AuthObject {
+export class AuthObject {
 	static rexp = /checkForm ?= ?(\"|\').{32}\1/g
 
 	constructor(public token: string) { }
@@ -60,10 +60,6 @@ class AuthObject {
 export default class DZApi {
 
 	constructor(public auth: AuthObject) { }
-
-	public static async newAsync(): Promise<DZApi> {
-		return new this(await AuthObject.getNewAuth())
-	}
 
 	private static getJSONAttr(from: string): string {
 		switch (from) {
